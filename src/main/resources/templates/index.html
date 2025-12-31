@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>JobNest – Find Your Next Job</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body class="background">
+
+
+<nav class="main_div">
+    <div class="logo_left">
+        <span class="logo">JobNest</span>
+        <span class="logo_com">.com</span>
+    </div>
+
+    <div class="logo_right">
+        <span class="Candidate_login_btn">
+            <a th:href="@{/login}" class="login-link">
+                <i class="fa fa-user-circle"></i> Candidate
+            </a>
+            <a th:href="@{/register}" class="register-link">
+                Register
+            </a>
+        </span>
+        <span class="Recruiter_login_btn">
+            <a th:href="@{/login}" class="login-link">
+                <i class="fa fa-building"></i> Recruiter
+            </a>
+            <a th:href="@{/register}" class="register-link">
+                Resgister
+            </a>
+        </span>
+    </div>
+</nav>
+
+<main class="hero">
+    <div class="hero-content">
+        <h1 class="primary-title">
+            Find your next job on JobNest
+        </h1>
+        <p class="hero-subtitle">
+            Search roles by title and location in seconds. Clean, simple and focused
+            on what matters most: your next opportunity.
+        </p>
+
+        <form th:action="@{/global-search}" method="get" class="hero-form">
+            <div class="searchBox">
+                <div class="inner">
+                    <input
+                            type="text"
+                            class="radius-left"
+                            placeholder="Job title or keyword "
+                            name="job"
+                            th:value="${job}" />
+
+                    <input
+                            type="text"
+                            placeholder="Location "
+                            name="location"
+                            th:value="${location}" />
+
+                    <button type="submit" class="radius-right hero-search-btn">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                        <span>Search</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <span class="copy-right">Copyright © JobNest.com</span>
+</footer>
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>
+

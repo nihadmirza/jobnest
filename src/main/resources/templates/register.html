@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>JobNest – Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body class="coffee_mug_background hidden-overflow">
+
+<nav class="main_div">
+    <div class="logo_left">
+        <span class="logo">JobNest</span>
+        <span class="logo_com">.com</span>
+    </div>
+
+    <div class="logo_right">
+        <span class="Candidate_login_btn">
+            <a th:href="@{/login}">
+                Candidate Login
+            </a>
+            <a th:href="@{/register(role='CANDIDATE')}">
+                / Register
+            </a>
+        </span>
+        <span class="Recruiter_login_btn">
+            <a th:href="@{/login}">
+                Recruiter Login
+            </a>
+            <a th:href="@{/register(role='RECRUITER')}">
+                / Register
+            </a>
+        </span>
+    </div>
+</nav>
+
+<main class="myForm">
+    <div class="auth-container">
+        <div class="auth-illustration d-none d-md-flex">
+            <img th:if="${role} == 'RECRUITER'"
+                 th:src="@{/assets/cofee.jpg}"
+                 alt="Recruiter illustration" />
+
+            <img th:if="${role} != 'RECRUITER'"
+                 th:src="@{/assets/cofee.jpg}"
+                 alt="Candidate illustration" />
+        </div>
+
+        <form th:action="@{/register/new}" method="post" class="auth-card">
+            <div class="role-toggle mb-3">
+                <a th:href="@{/register(role='CANDIDATE')}"
+                   th:classappend="${role} == 'CANDIDATE' ? ' active'">
+                    Candidate
+                </a>
+                <a th:href="@{/register(role='RECRUITER')}"
+                   th:classappend="${role} == 'RECRUITER' ? ' active'">
+                    Recruiter
+                </a>
+            </div>
+
+            <input type="hidden" name="role" th:value="${role}" />
+
+            <span class="role-label"
+                  th:text="${role} == 'RECRUITER' ? 'Recruiter account' : 'Candidate account'">
+                Candidate account
+            </span>
+
+            <h2 class="auth-title">
+                Join JobNest
+            </h2>
+
+            <p class="auth-subtitle">
+                <span th:if="${role} == 'RECRUITER'">
+                    Post jobs and manage your candidates from a single dashboard.
+                </span>
+                <span th:if="${role} != 'RECRUITER'">
+                    Create your profile, save jobs and apply in just a few clicks.
+                </span>
+            </p>
+
+            <!-- Success message -->
+            <div th:if="${successMessage}" class="alert alert-success py-2 mb-2">
+                <span th:text="${successMessage}">Registration form received.</span>
+            </div>
+
+            <!-- Error message display -->
+            <div class="row" th:if="${error}">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <div class="alert alert-danger" role="alert">
+                            <p th:text="${error}">Something went wrong.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End error message display -->
+
+            <div class="mb-2">
+                <label class="form-label">Full name</label>
+                <input type="text"
+                       class="form-control"
+                       name="fullName"
+                       required />
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label">Email</label>
+                <input type="email"
+                       class="form-control"
+                       name="email"
+                       placeholder="you@example.com"
+                       required />
+            </div>
+
+            <!--  RECRUITER  -->
+            <div class="mb-2" th:if="${role} == 'RECRUITER'">
+                <label class="form-label">Company name</label>
+                <input type="text"
+                       class="form-control"
+                       name="companyName"
+                       placeholder="e.g. TechNest LLC" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password"
+                       class="form-control"
+                       name="password"
+                       placeholder="••••••••"
+                       required />
+            </div>
+
+            <button type="submit" class="myBtn auth-submit-btn">
+                <span th:text="${role} == 'RECRUITER' ? 'Create recruiter account' : 'Create candidate account'">
+                    Create account
+                </span>
+            </button>
+
+            <p class="mt-2 text-center small-text">
+                Already have an account?
+                <a th:href="@{/login}" class="color-text">Sign in</a>
+            </p>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <span class="copy-right">Copyright © JobNest.com</span>
+</footer>
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>
