@@ -9,5 +9,6 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
 
     Optional<Users> findByEmail(String email);
 
-
+    @org.springframework.data.jpa.repository.Query("SELECT u FROM Users u LEFT JOIN FETCH u.recruiterProfile rp LEFT JOIN FETCH u.jobSeekerProfile jsp")
+    java.util.List<Users> findAllWithProfiles();
 }

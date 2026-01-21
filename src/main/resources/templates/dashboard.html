@@ -1,13 +1,287 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    data-bs-theme="light">
+
+<head th:replace="~{fragments/layout :: head('JobNest – Dashboard')}">
+    <!-- Additional page-specific styles -->
 </head>
+
 <body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/layout :: navbar}"></div>
 
-<h1>Dashboard</h1>
+    <!-- Main Content -->
+    <div class="main-content" style="margin-top: 80px;">
+        <div class="container py-5">
+            <!-- Welcome Header -->
+            <div class="dashboard-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="dashboard-title">
+                            Welcome back, <span th:text="${user?.firstName ?: 'User'}">User</span>!
+                        </h1>
+                        <p class="text-muted">Here's what's happening with your job activities today.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <span class="badge bg-light text-dark border px-3 py-2">
+                            <i class="fa fa-user-circle me-1"></i>
+                            <span th:text="${userType ?: 'USER'}">ROLE</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Feedback Messages -->
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <i class="fa fa-exclamation-circle me-2"></i> <span th:text="${error}">Error</span>
+            </div>
+            <div th:if="${param.success}" class="alert alert-success" role="alert">
+                <i class="fa fa-check-circle me-2"></i> Action completed successfully!
+            </div>
+
+            <!-- JOB SEEKER DASHBOARD -->
+            <div th:if="${userType == 'JOB_SEEKER'}">
+                <div class="row g-4">
+                    <!-- Profile Card -->
+                    <div class="col-lg-4">
+                        <div class="card profile-card">
+                            <div class="card-body p-4">
+                                <div class="mb-3">
+                                    <img th:if="${profile?.base64Photo != null}"
+                                        th:src="'data:image/jpeg;base64,' + ${profile.base64Photo}"
+                                        class="profile-avatar" alt="Profile" />
+                                    <img th:unless="${profile?.base64Photo != null}"
+                                        src="https://www.shutterstock.com/image-vector/vector-flat-illustration-gray-avatar-600nw-2264922221.jpg"
+                                        class="profile-avatar" alt="Profile" />
+                                </div>
+                                <h4 class="fw-bold mb-1"
+                                    th:text="${(profile?.firstName ?: 'New') + ' ' + (profile?.lastName ?: 'User')}">
+                                    Full Name
+                                </h4>
+                                <p class="text-muted mb-4" th:text="${profile?.employmentType ?: 'Ready to work'}">
+                                    Employment Type
+                                </p>
+                                <div class="d-grid gap-2">
+                                    <a th:href="@{/profile/edit}" class="btn btn-outline-primary">
+                                        <i class="fa fa-edit me-2"></i> Edit Profile
+                                    </a>
+                                    <a th:if="${profile?.resume != null}" th:href="@{${profile.resume}}" target="_blank"
+                                        class="btn btn-outline-secondary">
+                                        <i class="fa fa-file-pdf-o me-2"></i> View Resume
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats & Applications -->
+                    <div class="col-lg-8">
+                        <!-- Quick Actions -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-sm-6">
+                                <a th:href="@{/jobs}" class="quick-action-card">
+                                    <div class="d-flex align-items-center">
+                                        <div class="stat-icon me-3">
+                                            <i class="fa fa-search"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="fw-bold mb-0">Find Jobs</h5>
+                                            <small class="text-muted">Browse Listings</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="quick-action-card">
+                                    <div class="d-flex align-items-center">
+                                        <div class="stat-icon me-3">
+                                            <i class="fa fa-check-circle"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="fw-bold mb-0">Profile Status</h5>
+                                            <small class="text-success fw-bold"
+                                                th:if="${profile?.resume != null}">Complete</small>
+                                            <small class="text-danger fw-bold"
+                                                th:if="${profile?.resume == null}">Missing Resume</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Applications -->
+                        <div class="card">
+                            <div class="card-header bg-transparent border-0 py-3">
+                                <h5 class="fw-bold mb-0">Your Applications</h5>
+                            </div>
+                            <div class="card-body">
+                                <div th:if="${applications == null or applications.isEmpty()}"
+                                    class="text-center text-muted p-5">
+                                    <i class="fa fa-folder-open fa-3x mb-3 opacity-25"></i>
+                                    <p class="mb-3">You haven't applied to any jobs yet.</p>
+                                    <a th:href="@{/jobs}" class="btn btn-primary">Explore Jobs</a>
+                                </div>
+
+                                <div th:if="${applications != null and !applications.isEmpty()}">
+                                    <a th:each="app : ${applications}" th:href="@{/jobs/{id}(id=${app.job.jobId})}"
+                                        class="application-item">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center">
+                                                <div class="stat-icon me-3"
+                                                    style="width: 50px; height: 50px; font-size: 1.2rem; min-width: 50px;">
+                                                    <i class="fa fa-briefcase"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold" th:text="${app.job.title}">Job Title</h6>
+                                                    <small class="text-muted"
+                                                        th:text="${app.job.recruiter?.company}">Company</small>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge mb-1" th:classappend="${!app.job.isActive() ? 'bg-secondary' : 
+                                                      (app.status == 'Pending' ? 'bg-warning text-dark' : 
+                                                      (app.status == 'Accepted' ? 'bg-success' : 
+                                                      (app.status == 'Rejected' ? 'bg-danger' : 'bg-info')))}"
+                                                    th:text="${!app.job.isActive() ? 'Job Closed' : app.status}">Status</span>
+                                                <div class="small text-muted"
+                                                    th:text="${#dates.format(app.applyDate, 'MMM dd')}">Date</div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECRUITER DASHBOARD -->
+            <div th:if="${userType == 'RECRUITER'}">
+                <div class="row g-4">
+                    <!-- Recruiter Profile -->
+                    <div class="col-lg-4">
+                        <div class="card profile-card">
+                            <div class="card-body p-4">
+                                <div class="mb-3">
+                                    <img th:if="${profile?.base64Photo != null}"
+                                        th:src="'data:image/jpeg;base64,' + ${profile.base64Photo}"
+                                        class="profile-avatar" alt="Profile" />
+                                    <div th:unless="${profile?.base64Photo != null}"
+                                        class="profile-avatar d-flex align-items-center justify-content-center bg-primary">
+                                        <i class="fa fa-building fa-3x text-white"></i>
+                                    </div>
+                                </div>
+                                <h4 class="fw-bold mb-1" th:text="${profile?.company ?: 'Company Name'}">Company</h4>
+                                <p class="text-muted small mb-4">
+                                    <i class="fa fa-map-marker-alt me-1"></i>
+                                    <span th:text="${profile?.city ?: 'Location'}">Location</span>
+                                </p>
+                                <div class="d-grid gap-2">
+                                    <a th:href="@{/recruiter/jobs/new}" class="btn btn-primary">
+                                        <i class="fa fa-plus-circle me-2"></i> Post New Job
+                                    </a>
+                                    <a th:href="@{/recruiter/profile/edit}" class="btn btn-outline-secondary">
+                                        <i class="fa fa-cog me-2"></i> Company Settings
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recruiter Stats -->
+                    <div class="col-lg-8">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="stat-card">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <p class="stat-label mb-1">Total Applications</p>
+                                            <h2 class="stat-number mb-0" th:text="${applicationCount ?: 0}">0</h2>
+                                        </div>
+                                        <div class="stat-icon">
+                                            <i class="fa fa-users"></i>
+                                        </div>
+                                    </div>
+                                    <a th:href="@{/recruiter/applications}"
+                                        class="text-decoration-none mt-3 d-inline-block">
+                                        <small class="fw-bold text-accent">
+                                            View All <i class="fa fa-arrow-right ms-1"></i>
+                                        </small>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="stat-card">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <p class="stat-label mb-1">Pending Review</p>
+                                            <h2 class="stat-number mb-0 text-warning"
+                                                th:text="${pendingApplicationCount ?: 0}">0</h2>
+                                        </div>
+                                        <div class="stat-icon"
+                                            style="background: linear-gradient(135deg, var(--color-warning) 0%, #d97706 100%);">
+                                            <i class="fa fa-clock"></i>
+                                        </div>
+                                    </div>
+                                    <a th:href="@{/recruiter/applications?status=Pending}"
+                                        class="text-decoration-none mt-3 d-inline-block">
+                                        <small class="fw-bold text-warning">
+                                            Process Now <i class="fa fa-arrow-right ms-1"></i>
+                                        </small>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Links -->
+                        <div class="card">
+                            <div class="card-header bg-transparent border-0 py-3">
+                                <h5 class="fw-bold mb-0">Quick Links</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <a th:href="@{/recruiter/jobs}" class="quick-action-card">
+                                            <div class="d-flex align-items-center">
+                                                <div class="stat-icon me-3"
+                                                    style="width: 50px; height: 50px; font-size: 1.2rem; min-width: 50px;">
+                                                    <i class="fa fa-briefcase"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">Manage Jobs</h6>
+                                                    <small class="text-muted">Edit or remove listings</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <a th:href="@{/recruiter/applications}" class="quick-action-card">
+                                            <div class="d-flex align-items-center">
+                                                <div class="stat-icon me-3"
+                                                    style="width: 50px; height: 50px; font-size: 1.2rem; min-width: 50px;">
+                                                    <i class="fa fa-address-card"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">Candidate Search</h6>
+                                                    <small class="text-muted">Browse applicant profiles</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
 </body>
+
 </html>

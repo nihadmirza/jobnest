@@ -1,85 +1,387 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" data-bs-theme="light">
+
 <head>
     <meta charset="UTF-8" />
-    <title>JobNest – Find Your Next Job</title>
+    <title>JobNest – Unlock Your Next Career Move</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+
 </head>
-<body class="background">
 
+<body>
 
-<nav class="main_div">
-    <div class="logo_left">
-        <span class="logo">JobNest</span>
-        <span class="logo_com">.com</span>
-    </div>
-
-    <div class="logo_right">
-        <span class="Candidate_login_btn">
-            <a th:href="@{/login}" class="login-link">
-                <i class="fa fa-user-circle"></i> Candidate
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <img th:src="@{/assets/img/logoJobnest.png}" alt="JobNest Logo" class="navbar-logo" />
+                <span class="ms-2 font-weight-bold" style="font-size: 1.5rem; letter-spacing: -0.5px;">
+                    <span style="color: var(--color-primary);">Job</span><span class="text-accent">Nest</span>
+                </span>
             </a>
-            <a th:href="@{/register}" class="register-link">
-                Register
-            </a>
-        </span>
-        <span class="Recruiter_login_btn">
-            <a th:href="@{/login}" class="login-link">
-                <i class="fa fa-building"></i> Recruiter
-            </a>
-            <a th:href="@{/register}" class="register-link">
-                Resgister
-            </a>
-        </span>
-    </div>
-</nav>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/jobs}">Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/jobs}">Companies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/jobs}">Community</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fa fa-moon" id="themeIcon"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item ms-2" th:if="${!#authorization.expression('isAuthenticated()')}">
+                        <a th:href="@{/login}" class="btn btn-outline-primary btn-sm me-2">Login</a>
+                    </li>
+                    <li class="nav-item" th:if="${!#authorization.expression('isAuthenticated()')}">
+                        <a th:href="@{/register}" class="btn-apply">Apply Today</a>
+                    </li>
+                    <li class="nav-item ms-2" th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a th:href="@{/dashboard}" class="btn-apply">Dashboard</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-<main class="hero">
-    <div class="hero-content">
-        <h1 class="primary-title">
-            Find your next job on JobNest
-        </h1>
-        <p class="hero-subtitle">
-            Search roles by title and location in seconds. Clean, simple and focused
-            on what matters most: your next opportunity.
-        </p>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <h1 class="hero-title">Unlock Your Next Career Move</h1>
+                    <p class="hero-description">
+                        Explore thousands of opportunities from top employers. Connect with industry leaders
+                        and take the next step in your professional journey.
+                    </p>
 
-        <form th:action="@{/global-search}" method="get" class="hero-form">
-            <div class="searchBox">
-                <div class="inner">
-                    <input
-                            type="text"
-                            class="radius-left"
-                            placeholder="Job title or keyword "
-                            name="job"
-                            th:value="${job}" />
+                    <form class="hero-email-form" th:action="@{/register}" method="get">
+                        <input type="email" name="email" class="hero-email-input" placeholder="Your email address"
+                            required>
+                        <button type="submit" class="btn-get-started">Get Started</button>
+                    </form>
 
-                    <input
-                            type="text"
-                            placeholder="Location "
-                            name="location"
-                            th:value="${location}" />
 
-                    <button type="submit" class="radius-right hero-search-btn">
-                        <i class="fa fa-search" aria-hidden="true"></i>
-                        <span>Search</span>
-                    </button>
+                </div>
+                <div class="col-lg-6 hero-image-wrapper">
+                    <div class="hero-decorative-icons">
+                        <i class="fa fa-lightbulb hero-icon"></i>
+                        <i class="fa fa-book hero-icon"></i>
+                        <i class="fa fa-chart-line hero-icon"></i>
+                        <i class="fa fa-arrow-up hero-icon"></i>
+                        <i class="fa fa-graduation-cap hero-icon"></i>
+                        <i class="fa fa-briefcase hero-icon"></i>
+                        <i class="fa fa-laptop hero-icon"></i>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80&auto=format&fit=crop"
+                        alt="Professional woman working" class="hero-image">
                 </div>
             </div>
-        </form>
-    </div>
-</main>
+        </div>
+    </section>
 
-<footer>
-    <span class="copy-right">Copyright © JobNest.com</span>
-</footer>
 
-<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <!-- Trusted Companies Section -->
+    <section class="trusted-section">
+        <div class="container">
+            <p class="trusted-title">Trusted by the best companies</p>
+            <div class="company-logos">
+                <div class="company-logo fw-bold" style="font-family: 'Inter', sans-serif;"><i
+                        class="fa fa-microchip me-2 text-primary"></i>TechNova</div>
+                <div class="company-logo fw-bold" style="font-family: 'Inter', sans-serif;"><i
+                        class="fa fa-chart-line me-2 text-success"></i>Apex Financial</div>
+                <div class="company-logo fw-bold" style="font-family: 'Inter', sans-serif;"><i
+                        class="fa fa-briefcase me-2 text-info"></i>Stratum</div>
+                <div class="company-logo fw-bold" style="font-family: 'Inter', sans-serif;"><i
+                        class="fa fa-cloud me-2 text-secondary"></i>Nebula</div>
+                <div class="company-logo fw-bold" style="font-family: 'Inter', sans-serif;"><i
+                        class="fa fa-shopping-bag me-2 text-warning"></i>Pinnacle</div>
+                <div class="company-logo fw-bold" style="font-family: 'Inter', sans-serif;"><i
+                        class="fa fa-code me-2 text-danger"></i>OmniWare</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reach Talent Section -->
+    <section class="reach-talent-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="reach-talent-title">Reach Top Talent Worldwide</h2>
+                    <p class="reach-talent-description">
+                        Expand your search and connect with professionals from around the globe.
+                        Find the perfect candidate for your team.
+                    </p>
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Global Reach</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Easy Posting</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Advanced Filtering</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Analytics & Insights</span>
+                        </li>
+                    </ul>
+                    <a th:href="@{/recruiter/jobs/new}" class="btn-post-job"
+                        th:if="${#authorization.expression('hasAuthority(''ROLE_RECRUITER'')')}">Post a job</a>
+                    <a th:href="@{/register}" class="btn-post-job"
+                        th:if="${!#authorization.expression('isAuthenticated()')}">Post a job</a>
+                </div>
+                <div class="col-lg-6 world-map-wrapper">
+                    <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&q=80&auto=format&fit=crop"
+                        alt="Global talent network" class="world-map">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Featured Jobs Section -->
+    <section class="featured-jobs-section">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <h2 class="section-title mb-0">Highlighted Opportunities For You</h2>
+                <a th:href="@{/jobs}" class="btn-apply">View all jobs</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4" th:each="job : ${featuredJobs}">
+                    <div class="job-card">
+                        <span class="job-badge" th:text="${job.employmentType ?: 'Full Time'}">Full Time</span>
+                        <h3 class="job-title" th:text="${job.title}">Brand Designer</h3>
+                        <div class="job-meta">
+                            <div class="job-meta-item">
+                                <i class="fa fa-building"></i>
+                                <span th:text="${job.recruiter?.company ?: 'Company'}">Company Name</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fa fa-map-marker-alt"></i>
+                                <span th:text="${job.location ?: job.city ?: 'Remote'}">Berlin, Germany</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fa fa-briefcase"></i>
+                                <span th:text="${job.employmentType ?: 'Full Time'}">Full Time</span>
+                            </div>
+                        </div>
+                        <a th:href="@{/jobs/{id}(id=${job.jobId})}" class="btn-apply-job">Apply</a>
+                    </div>
+                </div>
+                <!-- Placeholder if no jobs -->
+                <div class="col-md-6 col-lg-4" th:if="${featuredJobs == null or featuredJobs.isEmpty()}">
+                    <div class="job-card">
+                        <span class="job-badge">Full Time</span>
+                        <h3 class="job-title">Brand Designer</h3>
+                        <div class="job-meta">
+                            <div class="job-meta-item">
+                                <i class="fa fa-building"></i>
+                                <span>Tech Solutions</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fa fa-map-marker-alt"></i>
+                                <span>Berlin, Germany</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fa fa-briefcase"></i>
+                                <span>Full Time</span>
+                            </div>
+                        </div>
+                        <a th:href="@{/jobs}" class="btn-apply-job">Apply</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section py-5 bg-light-custom">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="section-title mb-2">What Our Users Say</h2>
+                <p class="text-muted">Discover why professionals trust JobNest for their career growth</p>
+            </div>
+            <div class="row g-4">
+                <!-- Testimonial 1 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 p-3 testimonial-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-4">
+                                <img src="https://ui-avatars.com/api/?name=Nigar+Mammadova&size=80&background=0d6efd&color=fff"
+                                    class="rounded-circle me-3 shadow-sm" width="60" height="60" alt="Nigar Məmmədova">
+                                <div>
+                                    <h5 class="fw-bold mb-0">Nigar Məmmədova</h5>
+                                    <small class="text-muted">Software Developer at <span class="text-primary">TechNova
+                                            Solutions</span></small>
+                                </div>
+                            </div>
+                            <div class="mb-3 text-warning">
+                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+                                    class="fa fa-star"></i><i class="fa fa-star"></i>
+                            </div>
+                            <p class="card-text text-muted fst-italic">"JobNest is incredible! Using this platform, I
+                                found a job in a very short time. The interface is convenient and perfectly suited for
+                                finding vacancies in the local market. Highly recommended!"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 p-3 testimonial-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-4">
+                                <img src="https://ui-avatars.com/api/?name=Sarah+Mitchell&size=80&background=198754&color=fff"
+                                    class="rounded-circle me-3 shadow-sm" width="60" height="60" alt="Sarah Mitchell">
+                                <div>
+                                    <h5 class="fw-bold mb-0">Sarah Mitchell</h5>
+                                    <small class="text-muted">HR Manager at <span class="text-success">Apex Financial
+                                            Group</span></small>
+                                </div>
+                            </div>
+                            <div class="mb-3 text-warning">
+                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+                                    class="fa fa-star"></i><i class="fa fa-star"></i>
+                            </div>
+                            <p class="card-text text-muted fst-italic">"As a recruiter, finding qualified candidates has
+                                never been easier. The dashboard analytics and filtering tools saved our team countless
+                                hours. A true game-changer for HR professionals."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 p-3 testimonial-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-4">
+                                <img src="https://ui-avatars.com/api/?name=Michael+Chen&size=80&background=6610f2&color=fff"
+                                    class="rounded-circle me-3 shadow-sm" width="60" height="60" alt="Michael Chen">
+                                <div>
+                                    <h5 class="fw-bold mb-0">Michael Chen</h5>
+                                    <small class="text-muted">Marketing Specialist at <span class="text-purple">Stratum
+                                            Consulting</span></small>
+                                </div>
+                            </div>
+                            <div class="mb-3 text-warning">
+                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+                                    class="fa fa-star"></i><i class="fa fa-star"></i>
+                            </div>
+                            <p class="card-text text-muted fst-italic">"The variety of roles available on JobNest is
+                                impressive. I was able to pivot my career into consulting thanks to the opportunities
+                                listed here. The application process was seamless."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <div class="row g-5">
+                    <!-- Col 1: Brand -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-brand">
+                            <span class="footer-brand-text">
+                                <span style="color: var(--color-primary);">Job</span><span
+                                    class="text-accent">Nest</span>
+                            </span>
+                            <p class="footer-tagline">
+                                Unlocking your next career move with the best opportunities from top employers
+                                worldwide.
+                            </p>
+                            <div class="social-icons">
+                                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Col 2: Company -->
+                    <div class="col-lg-2 col-md-6">
+                        <h5 class="footer-heading">Company</h5>
+                        <div class="footer-links-col">
+                            <a href="#" class="footer-link">About Us</a>
+                            <a href="#" class="footer-link">Careers</a>
+                            <a href="#" class="footer-link">Blog</a>
+                            <a href="#" class="footer-link">Contact</a>
+                        </div>
+                    </div>
+
+                    <!-- Col 3: Support -->
+                    <div class="col-lg-2 col-md-6">
+                        <h5 class="footer-heading">Support</h5>
+                        <div class="footer-links-col">
+                            <a href="#" class="footer-link">Help Center</a>
+                            <a href="#" class="footer-link">Terms of Service</a>
+                            <a href="#" class="footer-link">Privacy Policy</a>
+                            <a href="#" class="footer-link">Cookie Policy</a>
+                        </div>
+                    </div>
+
+                    <!-- Col 4: Subscribe -->
+                    <div class="col-lg-4 col-md-6">
+                        <h5 class="footer-heading">Stay Updated</h5>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem;">Get the latest job alerts and industry news.
+                        </p>
+                        <form>
+                            <input type="email" class="footer-subscribe-input" placeholder="Your email address"
+                                required>
+                            <button type="submit" class="btn btn-subscribe w-100">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="row mt-5 pt-4 border-top border-secondary opacity-50">
+                    <div class="col-12 text-center">
+                        <p style="font-size: 0.9rem;">&copy; 2024 JobNest. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+
+        <!-- CRITICAL: Apply theme immediately to prevent flickering -->
+        <script>
+            (function () {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            })();
+        </script>
+
+        <!-- Theme Toggle Script -->
+        <script th:src="@{/js/theme-toggle.js}"></script>
 </body>
+
 </html>
 
+</html>

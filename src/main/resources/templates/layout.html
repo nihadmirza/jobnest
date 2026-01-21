@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${pageTitle ?: 'JobNest'}">JobNest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+
+    <!-- Page-specific styles -->
+    <th:block th:replace="${pageStyles ?: ''}"></th:block>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/}">
+                <img th:src="@{/assets/img/logoJobnest.png}" alt="JobNest Logo" class="navbar-logo" />
+                <span class="ms-2 font-weight-bold" style="font-size: 1.5rem; letter-spacing: -0.5px;">
+                    <span style="color: var(--color-primary);">Job</span><span class="text-accent">Nest</span>
+                </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item" th:if="${!#authorization.expression('isAuthenticated()')}">
+                        <a class="nav-link" th:href="@{/}">Home</a>
+                    </li>
+                    <li class="nav-item" th:if="${!#authorization.expression('isAuthenticated()')}">
+                        <a class="nav-link" th:href="@{/jobs}">Jobs</a>
+                    </li>
+                    <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ROLE_RECRUITER'')')}">
+                        <a class="nav-link" th:href="@{/recruiter/jobs}">My Jobs</a>
+                    </li>
+                    <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ROLE_RECRUITER'')')}">
+                        <a class="nav-link" th:href="@{/recruiter/jobs/new}">Post a Job</a>
+                    </li>
+                    <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ROLE_JOB SEEKER'')')}">
+                        <a class="nav-link" th:href="@{/profile/edit}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fa fa-moon" id="themeIcon"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item ms-2" th:if="${!#authorization.expression('isAuthenticated()')}">
+                        <a th:href="@{/login}" class="btn btn-outline-primary btn-sm">Login</a>
+                    </li>
+                    <li class="nav-item" th:if="${!#authorization.expression('isAuthenticated()')}">
+                        <a th:href="@{/register}" class="btn-apply btn-sm">Apply Today</a>
+                    </li>
+                    <li class="nav-item ms-2" th:if="${#authorization.expression('isAuthenticated()')}">
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content" style="margin-top: 80px;">
+        <th:block th:replace="${content}"></th:block>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#" class="footer-link">About</a>
+                <a href="#" class="footer-link">Help</a>
+                <a href="#" class="footer-link">Terms</a>
+                <a href="#" class="footer-link">Privacy</a>
+                <a href="#" class="footer-link">Contact</a>
+                <a href="#" class="footer-link">Guide</a>
+            </div>
+            <div class="text-center mt-4" style="color: rgba(255, 255, 255, 0.5);">
+                <p>&copy; 2024 JobNest. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+
+    <!-- Global Theme Script - Must be loaded early to prevent flickering -->
+    <script>
+        // CRITICAL: Apply theme immediately before page renders to prevent flickering
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+
+    <!-- Theme Toggle Script -->
+    <script th:src="@{/js/theme-toggle.js}"></script>
+
+    <!-- Page-specific scripts -->
+    <th:block th:replace="${pageScripts ?: ''}"></th:block>
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>JobNest – Candidate Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+
+<body class="bg-light-custom">
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                Job<span>Nest</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="mb-4">
+                    <a th:href="@{/recruiter/applications}" class="text-decoration-none text-muted small fw-bold">
+                        <i class="fa fa-arrow-left me-1"></i> Back to Applications
+                    </a>
+                </div>
+
+                <div class="card card-modern border-0 shadow-lg overflow-hidden">
+                    <!-- Profile Header/Cover -->
+                    <div class="profile-cover"></div>
+
+                    <div class="profile-info-container">
+                        <div class="profile-avatar overflow-hidden p-0 border">
+                            <img th:if="${candidateProfile.base64Photo != null}"
+                                th:src="'data:image/jpeg;base64,' + ${candidateProfile.base64Photo}"
+                                class="w-100 h-100 object-fit-cover" alt="Profile Photo" />
+                            <img th:unless="${candidateProfile.base64Photo != null}"
+                                src="https://www.shutterstock.com/image-vector/vector-flat-illustration-gray-avatar-600nw-2264922221.jpg"
+                                class="w-100 h-100 object-fit-cover" alt="Profile Photo" />
+                        </div>
+
+                        <div class="profile-text pt-4 mt-2">
+                            <h2 class="fw-bold text-dark"
+                                th:text="${(candidateProfile.firstName != null ? candidateProfile.firstName : '') + ' ' + (candidateProfile.lastName != null ? candidateProfile.lastName : '')}">
+                                Candidate Name
+                            </h2>
+                            <p class="mb-0 text-muted">
+                                <i class="fa fa-map-marker me-1"></i>
+                                <span th:text="${candidateProfile.city}">City</span>,
+                                <span th:text="${candidateProfile.country}">Country</span>
+                            </p>
+                        </div>
+
+                        <div class="ms-auto pt-4 mt-2">
+                            <a th:if="${candidateProfile.resume != null}" th:href="@{${candidateProfile.resume}}"
+                                target="_blank" class="btn btn-primary btn-modern shadow-sm">
+                                <i class="fa fa-download me-2"></i> Resume
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5 pt-0">
+                        <div class="row g-5">
+                            <!-- Left Col: About -->
+                            <div class="col-md-7">
+                                <h5 class="fw-bold text-dark mb-4 border-bottom pb-2">Professional Details</h5>
+
+                                <dl class="row mb-0">
+                                    <dt class="col-sm-4 text-muted fw-normal">Email</dt>
+                                    <dd class="col-sm-8 fw-medium" th:text="${candidateUser.email}">email@example.com
+                                    </dd>
+
+                                    <dt class="col-sm-4 text-muted fw-normal mt-3">Work Auth</dt>
+                                    <dd class="col-sm-8 fw-medium mt-3"
+                                        th:text="${candidateProfile.workAuthorization ?: 'Not Specified'}">Auth</dd>
+
+                                    <dt class="col-sm-4 text-muted fw-normal mt-3">Employment</dt>
+                                    <dd class="col-sm-8 fw-medium mt-3"
+                                        th:text="${candidateProfile.employmentType ?: 'Open to all'}">Type</dd>
+                                </dl>
+                            </div>
+
+                            <!-- Right Col: Skills -->
+                            <div class="col-md-5">
+                                <h5 class="fw-bold text-dark mb-4 border-bottom pb-2">Skills & Expertise</h5>
+
+                                <div th:if="${candidateProfile.skills != null and !candidateProfile.skills.isEmpty()}"
+                                    class="d-flex flex-wrap gap-2">
+                                    <span th:each="skill : ${candidateProfile.skills}"
+                                        class="badge bg-light text-dark border p-2">
+                                        <span th:text="${skill.name}">Skill</span>
+                                        <span th:if="${skill.experienceLevel}" class="text-muted fw-normal ms-1"
+                                            th:text="'(' + ${skill.experienceLevel} + ')'"></span>
+                                    </span>
+                                </div>
+
+                                <p th:if="${candidateProfile.skills == null or candidateProfile.skills.isEmpty()}"
+                                    class="text-muted fst-italic">
+                                    No skills listed.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container text-center py-4 text-muted small">
+            <p class="mb-0">Copyright © 2024 JobNest. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

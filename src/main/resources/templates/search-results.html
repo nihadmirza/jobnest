@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>JobNest – Search Results</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+
+<body class="bg-light-custom">
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                Job<span>Nest</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/jobs}">Browse Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <div class="mb-5">
+            <h2 class="fw-bold mb-2">Search Results</h2>
+            <p class="text-muted">
+                Found <span th:text="${jobs != null ? jobs.size() : 0}" class="fw-bold text-dark">0</span> jobs matching
+                your criteria.
+            </p>
+        </div>
+
+        <div class="row g-4" th:if="${jobs != null and !jobs.isEmpty()}">
+            <div class="col-lg-6" th:each="job : ${jobs}">
+                <a th:href="@{/jobs/{id}(id=${job.jobId})}"
+                    class="card card-modern h-100 text-decoration-none hover-lift">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-white border rounded p-3 me-3 shadow-sm text-accent"
+                                    style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-briefcase fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="job-title" th:text="${job.title}">Title</h5>
+                                    <small class="text-muted fw-semibold"
+                                        th:text="${job.recruiter?.company ?: 'Confidential Company'}">Company</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-light text-dark border">
+                                <span th:text="${job.employmentType ?: 'Full-time'}">Type</span>
+                            </span>
+                        </div>
+
+                        <p class="text-muted mb-4 small"
+                            th:text="${job.description != null ? (#strings.abbreviate(job.description, 150)) : 'No description available'}">
+                            Desc
+                        </p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-light text-secondary border" th:if="${job.location}">
+                                    <i class="fa-solid fa-location-dot me-1"></i> <span
+                                        th:text="${job.location}">Loc</span>
+                                </span>
+                                <span class="badge bg-light text-success border" th:if="${job.salary}">
+                                    <i class="fa-solid fa-money-bill-wave me-1"></i> <span
+                                        th:text="${job.salary}">Salary</span>
+                                </span>
+                            </div>
+                            <small class="text-muted" th:text="${#dates.format(job.postedDate, 'MMM dd')}">Date</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${jobs == null or jobs.isEmpty()}" class="text-center py-5">
+            <div class="mb-4 text-muted opacity-25">
+                <i class="fa-solid fa-magnifying-glass fa-5x"></i>
+            </div>
+            <h4 class="fw-bold text-dark">No Results Found</h4>
+            <p class="text-muted">We couldn't find any jobs matching your search.</p>
+            <div class="mt-4">
+                <a th:href="@{/jobs}" class="btn btn-primary">Browse All Jobs</a>
+                <a th:href="@{/}" class="btn btn-outline-secondary ms-2">Back Home</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container text-center py-4 text-muted small">
+            <p class="mb-0">Copyright © 2024 JobNest. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-package com.example.jobnest.services.Impl;
+package com.example.jobnest.services.impl;
 
 import com.example.jobnest.entity.UsersType;
 import com.example.jobnest.repository.UsersTypeRepository;

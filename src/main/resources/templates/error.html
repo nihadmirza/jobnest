@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="light">
+
+<head th:replace="~{fragments/layout :: head('JobNest – Error')}">
+    <style>
+        .error-dialog {
+            max-width: 600px;
+            margin: 4rem auto;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-bs-theme="dark"] .error-dialog {
+            background: var(--primary-gray);
+        }
+
+        .error-header {
+            background: #ef4444;
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .error-body {
+            padding: 2.5rem;
+        }
+
+        .error-message {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        [data-bs-theme="dark"] .error-message {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .error-details {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        [data-bs-theme="dark"] .error-details {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .error-details-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: #dc2626;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        [data-bs-theme="dark"] .error-details-label {
+            color: #fca5a5;
+        }
+
+        .error-details-text {
+            color: #991b1b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        [data-bs-theme="dark"] .error-details-text {
+            color: #fca5a5;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-go-home {
+            background: #1e40af;
+            color: white;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-go-home:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-go-back {
+            background: transparent;
+            color: var(--accent-teal);
+            border: 2px solid var(--accent-teal);
+            padding: 0.875rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-go-back:hover {
+            background: var(--accent-teal);
+            color: white;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+        [data-bs-theme="dark"] .btn-go-back {
+            color: var(--accent-teal);
+            border-color: var(--accent-teal);
+        }
+
+        [data-bs-theme="dark"] .btn-go-back:hover {
+            background: var(--accent-teal);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <!-- Main Content -->
+    <div class="main-content" style="margin-top: 80px;">
+        <div class="container py-5">
+            <div class="error-dialog">
+                <!-- Error Header -->
+                <div class="error-header">
+                    <div class="error-icon">
+                        <i class="fa fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="error-title" th:text="${errorTitle != null ? errorTitle : 'Unexpected Error'}">
+                        Unexpected Error
+                    </h3>
+                </div>
+
+                <!-- Error Body -->
+                <div class="error-body">
+                    <p class="error-message">
+                        We encountered an issue while processing your request.
+                    </p>
+
+                    <!-- Error Details -->
+                    <div class="error-details">
+                        <div class="error-details-label">
+                            <i class="fa fa-info-circle"></i>
+                            <span>Error Details:</span>
+                        </div>
+                        <div class="error-details-text" th:text="${error != null ? error : 'An unknown internal error occurred.'}">
+                            An unknown internal error occurred.
+                        </div>
+                    </div>
+
+                    <!-- Validation Errors (if any) -->
+                    <div th:if="${validationErrors != null and !validationErrors.isEmpty()}" class="error-details">
+                        <div class="error-details-label">
+                            <i class="fa fa-list"></i>
+                            <span>Validation Errors:</span>
+                        </div>
+                        <ul class="error-details-text" style="margin: 0; padding-left: 1.5rem;">
+                            <li th:each="error : ${validationErrors}" th:text="${error.value}">Error</li>
+                        </ul>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="error-actions">
+                        <a th:href="@{/}" class="btn-go-home">
+                            <i class="fa fa-home"></i>
+                            <span>Go Home</span>
+                        </a>
+                        <a href="javascript:history.back()" class="btn-go-back">
+                            <i class="fa fa-arrow-left"></i>
+                            <span>Go Back</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+
+</html>

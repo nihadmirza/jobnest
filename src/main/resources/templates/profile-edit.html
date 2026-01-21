@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>JobNest – Edit Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <style>
+        .file-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover,
+        .file-upload-area.dragover {
+            border-color: var(--secondary-color);
+            background: #ecfeff;
+        }
+
+        .skill-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .skill-item:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+    </style>
+</head>
+
+<body class="bg-light-custom">
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                Job<span>Nest</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="card card-modern border-0 shadow-lg">
+                    <div class="card-header border-bottom bg-white p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="fw-bold mb-0 text-accent">
+                                <i class="fa fa-user-edit me-2"></i> Edit Profile
+                            </h3>
+                            <a th:href="@{/dashboard}" class="btn btn-outline-secondary btn-sm">Cancel</a>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+
+                        <div th:if="${error}" class="alert alert-danger mb-4 shadow-sm border-0" role="alert">
+                            <i class="fa fa-exclamation-circle me-2"></i> <span th:text="${error}">Error</span>
+                        </div>
+
+                        <form th:action="@{/profile/update}" method="post" enctype="multipart/form-data"
+                            id="profileForm">
+
+                            <!-- Profile Photo -->
+                            <div class="mb-5 text-center">
+                                <div class="position-relative d-inline-block">
+                                    <div class="rounded-circle overflow-hidden border shadow-sm avatar-xl bg-surface">
+                                        <img th:if="${profile.base64Photo != null}"
+                                            th:src="'data:image/jpeg;base64,' + ${profile.base64Photo}"
+                                            class="w-100 h-100 object-fit-cover" alt="Profile Photo" />
+                                        <img th:unless="${profile.base64Photo != null}"
+                                            src="https://www.shutterstock.com/image-vector/vector-flat-illustration-gray-avatar-600nw-2264922221.jpg"
+                                            class="w-100 h-100 object-fit-cover" alt="Profile Photo" />
+                                    </div>
+                                    <label
+                                        class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle shadow-sm"
+                                        style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                                        title="Upload Photo">
+                                        <i class="fa fa-camera small"></i>
+                                        <input type="file" name="image" class="d-none" accept="image/png, image/jpeg"
+                                            onchange="document.getElementById('profileForm').submit()" />
+                                    </label>
+                                </div>
+                                <p class="text-muted small mt-2 mb-0">Allowed: JPG, PNG (Max 2MB)</p>
+                            </div>
+
+                            <!-- Personal Information -->
+                            <div class="mb-5">
+                                <h6 class="text-uppercase text-muted small fw-bold mb-3 border-bottom pb-2">Personal
+                                    Details</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small">First Name <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="firstName"
+                                            th:value="${profile?.firstName}" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small">Last Name <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="lastName"
+                                            th:value="${profile?.lastName}" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small">Work Authorization</label>
+                                        <select class="form-select" name="workAuthorization">
+                                            <option value="">Select Status</option>
+                                            <option th:value="'Citizen'"
+                                                th:selected="${profile?.workAuthorization == 'Citizen'}">Citizen
+                                            </option>
+                                            <option th:value="'Work Permit'"
+                                                th:selected="${profile?.workAuthorization == 'Work Permit'}">Work Permit
+                                            </option>
+                                            <option th:value="'No Work Permit'"
+                                                th:selected="${profile?.workAuthorization == 'No Work Permit'}">No Work
+                                                Permit</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small">Employment Type</label>
+                                        <select class="form-select" name="employmentType">
+                                            <option value="">Select Preference</option>
+                                            <option th:value="'Full-time'"
+                                                th:selected="${profile?.employmentType == 'Full-time'}">Full-time
+                                            </option>
+                                            <option th:value="'Part-time'"
+                                                th:selected="${profile?.employmentType == 'Part-time'}">Part-time
+                                            </option>
+                                            <option th:value="'Contract'"
+                                                th:selected="${profile?.employmentType == 'Contract'}">Contract</option>
+                                            <option th:value="'Freelance'"
+                                                th:selected="${profile?.employmentType == 'Freelance'}">Freelance
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="mb-5">
+                                <h6 class="text-uppercase text-muted small fw-bold mb-3 border-bottom pb-2">Location
+                                </h6>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small">City</label>
+                                        <input type="text" class="form-control" name="city"
+                                            th:value="${profile?.city}" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small">State/Region</label>
+                                        <input type="text" class="form-control" name="state"
+                                            th:value="${profile?.state}" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small">Country</label>
+                                        <input type="text" class="form-control" name="country"
+                                            th:value="${profile?.country}" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Resume Upload -->
+                            <div class="mb-5">
+                                <h6 class="text-uppercase text-muted small fw-bold mb-3 border-bottom pb-2">Resume / CV
+                                </h6>
+
+                                <div class="file-upload-area" id="fileUploadArea">
+                                    <i class="fa fa-cloud-upload fa-3x text-secondary mb-3"></i>
+                                    <h6 class="fw-bold text-dark">Drag & Drop or Click to Upload</h6>
+                                    <p class="text-muted small mb-3">Supported formats: PDF, DOC, DOCX (Max 5MB)</p>
+                                    <input type="file" id="resumeFile" name="resumeFile" accept=".pdf,.doc,.docx"
+                                        class="d-none" onchange="handleFileSelect(this)" />
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                        onclick="document.getElementById('resumeFile').click()">Browse Files</button>
+                                </div>
+
+                                <div id="fileInfo" class="alert alert-info mt-3 d-none align-items-center">
+                                    <i class="fa fa-file-text me-2"></i> <span id="fileName"
+                                        class="fw-medium">filename.pdf</span>
+                                </div>
+
+                                <div th:if="${profile?.resume}"
+                                    class="mt-3 p-3 bg-light rounded border d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="badge bg-success me-2">Current</span>
+                                        <a th:href="@{${profile.resume}}" target="_blank"
+                                            class="text-decoration-none fw-bold text-dark">
+                                            <i class="fa fa-paperclip me-1"></i> View Existing Resume
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <label class="form-label fw-bold small">Or provide a link</label>
+                                    <input type="url" class="form-control" name="resumeUrl"
+                                        placeholder="https://linkedin.com/in/..." />
+                                </div>
+                            </div>
+
+                            <!-- Skills -->
+                            <div class="mb-5">
+                                <div class="d-flex justify-content-between align-items-end border-bottom pb-2 mb-3">
+                                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Skills</h6>
+                                    <button type="button" class="btn btn-sm btn-success" onclick="addSkill()">
+                                        <i class="fa fa-plus me-1"></i> Add Skill
+                                    </button>
+                                </div>
+
+                                <div id="skillsContainer">
+                                    <div th:if="${profile?.skills != null}"
+                                        th:each="skill, iterStat : ${profile.skills}" class="skill-item"
+                                        th:id="'skill-' + ${iterStat.index + 1}">
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <strong class="text-accent">Skill #<span
+                                                    th:text="${iterStat.index + 1}">1</span></strong>
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                th:onclick="'removeSkill(' + ${iterStat.index + 1} + ')'">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div class="row g-3">
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    name="skillNames" th:value="${skill.name}" placeholder="Skill Name"
+                                                    required />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select class="form-select form-select-sm" name="experienceLevels">
+                                                    <option value="">Level</option>
+                                                    <option th:value="'Beginner'"
+                                                        th:selected="${skill.experienceLevel == 'Beginner'}">Beginner
+                                                    </option>
+                                                    <option th:value="'Intermediate'"
+                                                        th:selected="${skill.experienceLevel == 'Intermediate'}">
+                                                        Intermediate</option>
+                                                    <option th:value="'Advanced'"
+                                                        th:selected="${skill.experienceLevel == 'Advanced'}">Advanced
+                                                    </option>
+                                                    <option th:value="'Expert'"
+                                                        th:selected="${skill.experienceLevel == 'Expert'}">Expert
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    name="yearsOfExperience" th:value="${skill.yearsOfExperience}"
+                                                    placeholder="Years" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-3 pt-3 border-top">
+                                <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm">
+                                    Save Profile
+                                </button>
+                                <a th:href="@{/dashboard}" class="btn btn-outline-secondary px-4 py-2">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container text-center py-4 text-muted small">
+            <p class="mb-0">Copyright © 2024 JobNest. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+    <script th:inline="javascript">
+        let skillCount = /*[[${profile?.skills != null ? profile.skills.size() : 0}]]*/ 0;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (skillCount === 0) addSkill();
+        });
+
+        function addSkill() {
+            skillCount++;
+            const div = document.createElement('div');
+            div.className = 'skill-item';
+            div.id = 'skill-' + skillCount;
+            div.innerHTML = `
+            <div class="d-flex justify-content-between mb-3">
+                <strong class="text-primary-custom">Skill #${skillCount}</strong>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeSkill(${skillCount})"><i class="fa fa-trash"></i></button>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <input type="text" class="form-control form-control-sm" name="skillNames" placeholder="Skill Name (e.g. Java)" required />
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select form-select-sm" name="experienceLevels">
+                        <option value="">Level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                        <option value="Expert">Expert</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control form-control-sm" name="yearsOfExperience" placeholder="Years" />
+                </div>
+            </div>
+        `;
+            document.getElementById('skillsContainer').appendChild(div);
+        }
+
+        function removeSkill(id) {
+            const el = document.getElementById('skill-' + id);
+            if (el) el.remove();
+        }
+
+        function handleFileSelect(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const size = (file.size / 1024 / 1024).toFixed(2);
+                const info = document.getElementById('fileInfo');
+                const name = document.getElementById('fileName');
+                name.textContent = `${file.name} (${size} MB)`;
+                info.classList.remove('d-none');
+                info.classList.add('d-flex');
+            }
+        }
+
+        // Drag and Drop
+        const area = document.getElementById('fileUploadArea');
+        const input = document.getElementById('resumeFile');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(name => {
+            area.addEventListener(name, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(name => {
+            area.addEventListener(name, () => area.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(name => {
+            area.addEventListener(name, () => area.classList.remove('dragover'), false);
+        });
+
+        area.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            input.files = dt.files;
+            handleFileSelect(input);
+        }, false);
+    </script>
+</body>
+
+</html>

@@ -35,7 +35,7 @@ public class Skills {
                 ", name='" + name + '\'' +
                 ", experienceLevel='" + experienceLevel + '\'' +
                 ", yearsOfExperience='" + yearsOfExperience + '\'' +
-                ", jobSeekerProfile=" + jobSeekerProfile +
+                ", jobSeekerProfileId=" + (jobSeekerProfile != null ? jobSeekerProfile.getUserAccountId() : "null") +
                 '}';
     }
 }

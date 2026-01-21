@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="light">
+
+<head th:replace="~{fragments/layout :: head('JobNest – Post Job')}">
+    <style>
+        .job-form-card {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .form-section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        [data-bs-theme="dark"] .form-section-title {
+            border-bottom-color: #374151;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <!-- Main Content -->
+    <div class="main-content" style="margin-top: 80px;">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card job-form-card">
+                        <div class="card-header bg-transparent border-0 py-4">
+                            <h3 class="fw-bold mb-0" style="color: var(--accent-teal);"
+                                th:text="${job != null and job.jobId != null and job.jobId > 0 ? 'Edit Job' : 'Post New Job'}">
+                                Post New Job
+                            </h3>
+                        </div>
+                        <div class="card-body p-4 p-md-5">
+                            <form th:if="${job != null}"
+                                th:action="${job.jobId != null and job.jobId > 0 ? '/recruiter/jobs/' + job.jobId : '/recruiter/jobs'}"
+                                th:object="${job}" method="post">
+
+                                <div class="mb-5">
+                                    <h6 class="form-section-title">Basic Information</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Job Title <span class="text-danger">*</span></label>
+                                        <input type="text" th:field="*{title}" class="form-control"
+                                            placeholder="e.g. Senior Product Designer" required>
+                                        <div th:if="${#fields.hasErrors('title')}" class="text-danger small mt-1"
+                                            th:errors="*{title}">Error</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Description <span class="text-danger">*</span></label>
+                                        <textarea th:field="*{description}" class="form-control" rows="6"
+                                            placeholder="Describe the role responsibilities and requirements..."
+                                            required></textarea>
+                                        <div th:if="${#fields.hasErrors('description')}" class="text-danger small mt-1"
+                                            th:errors="*{description}">Error</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-5">
+                                    <h6 class="form-section-title">Job Details</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Employment Type</label>
+                                            <select class="form-select" th:field="*{employmentType}">
+                                                <option value="">Select Type</option>
+                                                <option value="FULL_TIME">Full-time</option>
+                                                <option value="PART_TIME">Part-time</option>
+                                                <option value="CONTRACT">Contract</option>
+                                                <option value="FREELANCE">Freelance</option>
+                                                <option value="INTERNSHIP">Internship</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Salary Range</label>
+                                            <input type="text" th:field="*{salary}" class="form-control"
+                                                placeholder="e.g. $80,000 - $120,000">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-5">
+                                    <h6 class="form-section-title">Location</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Display Location</label>
+                                            <input type="text" th:field="*{location}" class="form-control"
+                                                placeholder="e.g. San Francisco, CA">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">City</label>
+                                            <input type="text" th:field="*{city}" class="form-control">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">State</label>
+                                            <input type="text" th:field="*{state}" class="form-control">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Country</label>
+                                            <input type="text" th:field="*{country}" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-3 pt-3 border-top">
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="fa me-2"
+                                            th:classappend="${job.jobId != null and job.jobId > 0 ? 'fa-save' : 'fa-credit-card'}"></i>
+                                        <span th:text="${job.jobId != null and job.jobId > 0 ? 'Save Changes' : 'Continue to Payment'}">
+                                            Continue to Payment
+                                        </span>
+                                    </button>
+                                    <a th:href="@{/recruiter/jobs}" class="btn btn-outline-secondary px-4">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/layout :: footer}"></div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+
+</html>

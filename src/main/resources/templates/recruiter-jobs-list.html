@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>JobNest – My Jobs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+
+<body class="bg-light-custom">
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                Job<span>Nest</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                        </form>
+                    </li>
+                    <li class="nav-item d-flex align-items-center" th:if="${profile != null}">
+                        <img th:if="${profile.base64Photo != null}"
+                            th:src="'data:image/jpeg;base64,' + ${profile.base64Photo}" class="rounded-circle border"
+                            style="width: 32px; height: 32px; object-fit: cover;" alt="Profile" />
+                        <img th:unless="${profile.base64Photo != null}"
+                            src="https://www.shutterstock.com/image-vector/vector-flat-illustration-gray-avatar-600nw-2264922221.jpg"
+                            class="rounded-circle border" style="width: 32px; height: 32px; object-fit: cover;"
+                            alt="Profile" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold mb-1">My Job Postings</h2>
+                <p class="text-muted">Manage your active listings and recruit talent.</p>
+            </div>
+            <a th:href="@{/recruiter/jobs/new}" class="btn btn-primary btn-modern shadow-sm">
+                <i class="fa fa-plus me-2"></i> Post New Job
+            </a>
+        </div>
+
+        <div class="row g-4" th:if="${jobs != null and !jobs.isEmpty()}">
+            <div class="col-lg-6" th:each="job : ${jobs}">
+                <div class="card card-modern h-100 hover-lift">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="fw-bold text-dark mb-1" th:text="${job.title}">Job Title</h5>
+                                <small class="text-muted">
+                                    Posted <span th:text="${#dates.format(job.postedDate, 'MMM dd, yyyy')}">Date</span>
+                                </small>
+                            </div>
+                            <span class="badge border"
+                                th:classappend="${job.isActive ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-secondary'}"
+                                th:text="${job.isActive ? 'Active' : 'Inactive'}">
+                                Status
+                            </span>
+                        </div>
+
+                        <p class="text-muted mb-4 small"
+                            th:text="${job.description != null ? (#strings.abbreviate(job.description, 150)) : 'No description available.'}">
+                            Description...
+                        </p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                            <div class="d-flex gap-2 text-muted small">
+                                <span th:if="${job.location}"><i class="fa fa-map-marker me-1"></i> <span
+                                        th:text="${job.location}">Loc</span></span>
+                                <span class="mx-1">•</span>
+                                <span th:text="${job.employmentType}">Type</span>
+                            </div>
+
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light border dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown">
+                                    Actions
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                    <li>
+                                        <a class="dropdown-item"
+                                            th:href="@{/recruiter/jobs/{id}/edit(id=${job.jobId})}">
+                                            <i class="fa fa-edit me-2 text-warning"></i> Edit
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <form th:action="@{/recruiter/jobs/{id}/archive(id=${job.jobId})}" method="post"
+                                            th:if="${job.isActive}"
+                                            onsubmit="return confirm('Are you sure you want to archive this job? It will be hidden from candidates.');">
+                                            <button type="submit" class="dropdown-item text-secondary">
+                                                <i class="fa fa-archive me-2"></i> Archive
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form th:action="@{/recruiter/jobs/{id}/delete(id=${job.jobId})}" method="post"
+                                            onsubmit="return confirm('Are you sure you want to delete this job posting? This cannot be undone.');">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fa fa-trash me-2"></i> Delete
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${jobs == null or jobs.isEmpty()}" class="text-center py-5">
+            <div class="mb-4 text-muted opacity-25">
+                <i class="fa fa-briefcase fa-5x"></i>
+            </div>
+            <h4 class="fw-bold text-dark">No Jobs Posted Yet</h4>
+            <p class="text-muted">Get started by posting your first job opportunity.</p>
+            <a th:href="@{/recruiter/jobs/new}" class="btn btn-primary mt-3">Post a Job</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container text-center py-4 text-muted small">
+            <p class="mb-0">Copyright © 2024 JobNest. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,963 @@
+/**
+ * JobNest Unified Theme System
+ * WCAG 2.1 AA Compliant Color Palette
+ * Consistent dark/light mode support
+ */
+
+/* =========================================
+   UNIFIED COLOR PALETTE
+   ========================================= */
+:root {
+    /* Primary Colors - High Saturation Vibrant Palette */
+    --color-primary: #004AAD;
+    /* Vibrant Navy Blue - High Energy */
+    --color-primary-dark: #003380;
+    /* Darker Navy */
+    --color-primary-light: #4D89D6;
+    /* Lighter Blue */
+    --color-primary-subtle: #dbedff;
+    /* Very Light Blue */
+
+    /* Accent Colors */
+    --color-accent: #2ECC71;
+    /* Neon-tinged Professional Green */
+    --color-accent-dark: #27ae60;
+    /* Darker Green */
+    --color-accent-light: #58d68d;
+    /* Lighter Green */
+
+    /* Secondary Colors */
+    --color-secondary: #64748B;
+    /* Slate 500 */
+    --color-secondary-light: #94A3B8;
+    /* Slate 400 */
+
+    /* Neutral Colors - Dark Mode */
+    --color-dark-bg: #0f172a;
+    --color-dark-surface: #1e293b;
+    --color-dark-border: #334155;
+    --color-dark-text: #f8fafc;
+    --color-dark-muted: #94a3b8;
+
+    /* Neutral Colors - Light Mode */
+    --color-light-bg: #FFFFFF;
+    /* Pure White - "Pop" Effect */
+    --color-light-surface: #F9FAFB;
+    /* Very Light Grey */
+    --color-light-border: #E5E7EB;
+    --color-light-text: #111827;
+    /* High Contrast Dark */
+    --color-light-muted: #4B5563;
+
+    /* Status Colors */
+    --color-success: #2ECC71;
+    /* Vibrant Green */
+    --color-success-bg: #ECFDF5;
+    --color-warning: #F59E0B;
+    /* Vibrant Orange */
+    --color-warning-bg: #FFFBEB;
+    --color-error: #EF4444;
+    /* Vibrant Red */
+    --color-error-bg: #FEF2F2;
+    --color-info: #3B82F6;
+    --color-info-bg: #EFF6FF;
+
+    /* Semantic Aliases */
+    --bg-primary: var(--color-light-bg);
+    --bg-secondary: var(--color-light-surface);
+    --text-primary: var(--color-light-text);
+    --text-secondary: var(--color-light-muted);
+    --border-primary: var(--color-light-border);
+
+    /* Spacing & Layout */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 2rem;
+    /* Increased for airiness */
+    --spacing-xl: 4rem;
+    /* Doubled */
+    --spacing-2xl: 8rem;
+    /* 128px for section spacing */
+
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    /* Increased to 20px for modern feel */
+    --radius-xl: 32px;
+    --radius-full: 9999px;
+
+    /* Shadows - Premium Soft Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.03), 0 4px 6px -4px rgba(0, 0, 0, 0.02);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+    --shadow-header: 0 4px 20px rgba(0, 0, 0, 0.03);
+    --shadow-glow: 0 0 20px rgba(46, 204, 113, 0.3);
+
+    /* Transitions */
+    --transition-fast: 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    --transition-base: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* Smoother premium feel */
+}
+
+/* Dark Mode Overrides */
+[data-bs-theme="dark"] {
+    --bg-primary: var(--color-dark-bg);
+    --bg-secondary: var(--color-dark-surface);
+    --text-primary: var(--color-dark-text);
+    --text-secondary: var(--color-dark-muted);
+    --border-primary: var(--color-dark-border);
+    --color-light-bg: var(--color-dark-bg);
+}
+
+/* =========================================
+   BASE STYLES
+   ========================================= */
+* {
+    transition: background-color var(--transition-base),
+        color var(--transition-base),
+        border-color var(--transition-base),
+        box-shadow var(--transition-base);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================
+   TYPOGRAPHY
+   ========================================= */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 700;
+    color: var(--color-primary);
+    /* Deep Blue Headings */
+    margin-bottom: var(--spacing-md);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--color-accent);
+    /* Green Hover */
+}
+
+/* =========================================
+   NAVBAR (Updated with Logo & Shadow)
+   ========================================= */
+.navbar {
+    background: var(--bg-primary) !important;
+    padding: 0.75rem 0;
+    box-shadow: var(--shadow-header);
+    border-bottom: 1px solid var(--border-primary);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--color-primary) !important;
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.navbar-logo {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
+.nav-link {
+    font-weight: 600;
+    color: var(--text-primary) !important;
+    margin: 0 0.5rem;
+    font-size: 0.95rem;
+    transition: var(--transition-fast);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--color-accent) !important;
+    /* Green Hover */
+}
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+/* =========================================
+   BUTTONS (Enhanced)
+   ========================================= */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: var(--radius-full);
+    /* Modern rounded feel */
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+/* Primary Brand Buttons (Get Started, Post Job) */
+.btn-primary,
+.btn-apply,
+.btn-get-started,
+.btn-post-job,
+.btn-subscribe {
+    background: var(--color-primary);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover,
+.btn-apply:hover,
+.btn-get-started:hover,
+.btn-post-job:hover,
+.btn-subscribe:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+    /* Brand glow */
+    color: white;
+}
+
+/* Secondary / Outline Buttons */
+.btn-outline-primary {
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    /* Thicker border */
+    color: var(--color-primary);
+}
+
+.btn-outline-primary:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Job Card Apply Button */
+.btn-apply-job {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    background: var(--color-primary);
+    /* Filled button for visibility */
+    color: white;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all var(--transition-fast);
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.btn-apply-job:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+/* =========================================
+   FOOTER (Multi-Column)
+   ========================================= */
+footer {
+    background: var(--color-dark-surface);
+    color: var(--color-dark-muted);
+    padding: 5rem 0 2rem;
+    margin-top: auto;
+    border-top: 1px solid var(--color-dark-border);
+}
+
+.footer-brand {
+    margin-bottom: 2rem;
+}
+
+.footer-brand-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.03em;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.footer-tagline {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 300px;
+}
+
+.footer-heading {
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.footer-links-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.footer-link {
+    color: var(--color-dark-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.footer-link:hover {
+    color: var(--color-accent);
+    padding-left: 5px;
+    /* Subtle movement */
+}
+
+.footer-subscribe-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-dark-border);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.footer-subscribe-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.social-icons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: all var(--transition-fast);
+}
+
+.social-icon:hover {
+    background: var(--color-primary);
+    transform: translateY(-3px);
+}
+
+/* =========================================
+   CARDS
+   ========================================= */
+.card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-light-border);
+    /* Subtle border change */
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--border-primary);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin: calc(var(--spacing-lg) * -1) calc(var(--spacing-lg) * -1) var(--spacing-md);
+}
+
+/* Use this for stat-card as well to unify */
+.stat-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    transition: all var(--transition-base);
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--color-primary-subtle);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* =========================================
+   SIDEBAR (Migrated from layout.html)
+   ========================================= */
+.sidebar {
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-primary);
+    min-height: calc(100vh - 73px);
+    /* approx navbar height */
+    padding: 1.5rem 0;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all var(--transition-fast);
+    font-weight: 500;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background: var(--color-primary-subtle);
+    border-left-color: var(--color-primary);
+    color: var(--color-primary-dark);
+}
+
+[data-bs-theme="dark"] .sidebar-link:hover,
+[data-bs-theme="dark"] .sidebar-link.active {
+    background: rgba(15, 118, 110, 0.2);
+    /* Transparent teal for dark mode */
+}
+
+/* =========================================
+   FORMS
+   ========================================= */
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    transition: var(--transition-fast);
+}
+
+.form-control:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-subtle);
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.3);
+}
+
+.form-label {
+    display: block;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.375rem;
+    font-size: 0.9em;
+}
+
+/* =========================================
+   TABLES
+   ========================================= */
+.table {
+    width: 100%;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border-primary);
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead {
+    background: var(--bg-primary);
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-primary);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.table td {
+    padding: 1rem;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-primary);
+    vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background-color: var(--bg-primary);
+}
+
+
+/* =========================================
+   UTILITIES & EXTRAS
+   ========================================= */
+.main-content {
+    min-height: calc(100vh - 200px);
+    padding: 2rem 0;
+    background: var(--bg-primary);
+}
+
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-full);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.theme-toggle:hover {
+    background: var(--bg-primary);
+    color: var(--color-primary);
+    transform: rotate(15deg);
+}
+
+/* =========================================
+   LANDING PAGE SECTIONS (Migrated from index.html)
+   ========================================= */
+
+/* Glassmorphism Utility */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+[data-bs-theme="dark"] .glass-panel {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #F8FAFC 0%, #E0F2FE 100%);
+    /* Soft Gradient */
+    padding: 160px 0 120px;
+    /* Massive padding */
+    position: relative;
+    overflow: hidden;
+    min-height: 800px;
+    display: flex;
+    align-items: center;
+}
+
+[data-bs-theme="dark"] .hero-section {
+    background: radial-gradient(circle at top right, #0F4C75 0%, #0f172a 60%);
+}
+
+.hero-title {
+    font-size: 4.5rem;
+    /* Massive H1 */
+    font-weight: 800;
+    color: var(--color-primary);
+    line-height: 1.1;
+    margin-bottom: 2rem;
+    letter-spacing: -0.04em;
+    /* Tight tracking */
+}
+
+.hero-description {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    line-height: 1.8;
+    max-width: 600px;
+    font-weight: 400;
+}
+
+/* Hero Form */
+.hero-email-form {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+    max-width: 550px;
+    padding: 0.75rem;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: var(--shadow-lg);
+}
+
+.hero-email-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.hero-email-input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Hero Image */
+.hero-image {
+    width: 100%;
+    /* height: 600px; Remove fixed height allowing auto scale */
+    object-fit: contain;
+    border-radius: 32px;
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--shadow-xl);
+    transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+    transition: transform 0.5s ease;
+}
+
+.hero-image:hover {
+    transform: perspective(1000px) rotateY(0) rotateX(0);
+}
+
+/* Sticky Footer Layout */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+footer {
+    margin-top: auto;
+}
+
+/* Trusted Companies */
+.trusted-section {
+    background: var(--bg-primary);
+    /* Changed to match hero flow or keep distinct based on preference, using bg-primary for seamlessness */
+    padding: 40px 0;
+    border-bottom: 1px solid var(--border-primary);
+    margin-top: -40px;
+    /* Pull up closer to Hero */
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.trusted-title {
+    color: var(--text-secondary);
+    text-align: center;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+}
+
+.company-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4rem;
+    flex-wrap: wrap;
+    opacity: 0.6;
+}
+
+.company-logo {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    transition: var(--transition-base);
+}
+
+.company-logo:hover {
+    color: var(--color-primary);
+    transform: scale(1.1);
+}
+
+/* Reach Talent Section */
+.reach-talent-section {
+    background: var(--bg-primary);
+    padding: 140px 0;
+}
+
+.reach-talent-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    font-size: 1.15rem;
+    font-weight: 500;
+}
+
+.feature-item i {
+    color: var(--color-success);
+    font-size: 1.4rem;
+    background: var(--color-success-bg);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Job Cards (Extends standard card) */
+.job-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    transition: all var(--transition-base);
+    height: 100%;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+    /* Premium Shadow */
+    border-color: rgba(0, 74, 173, 0.2);
+}
+
+.job-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.job-meta-item {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.job-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: var(--color-primary-subtle);
+    color: var(--color-primary-dark);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* =========================================
+   FEATURED JOBS (Enhanced Prominence)
+   ========================================= */
+
+.featured-jobs-section {
+    background: linear-gradient(180deg, #FFFFFF 0%, var(--color-primary-subtle) 100%);
+    padding: 140px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Add a subtle top border/separator effect */
+.featured-jobs-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+}
+
+/* Badges */
+.badge {
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+}
+
+/* =========================================
+   DASHBOARD STYLES (Migrated from dashboard.html)
+   ========================================= */
+
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+[data-bs-theme="dark"] .dashboard-title {
+    color: var(--text-primary);
+}
+
+.profile-card {
+    text-align: center;
+    height: 100%;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--color-primary);
+    margin: 0 auto 1.5rem;
+    background: var(--bg-primary);
+}
+
+.quick-action-card {
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-base);
+    text-decoration: none;
+    display: block;
+    color: inherit;
+    background: var(--bg-secondary);
+    height: 100%;
+}
+
+.quick-action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+    text-decoration: none;
+    color: inherit;
+}
+
+.application-item {
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    transition: all var(--transition-base);
+    text-decoration: none;
+    display: block;
+    color: inherit;
+    background: var(--bg-secondary);
+}
+
+.application-item:hover {
+    border-color: var(--color-primary);
+    transform: translateX(5px);
+    text-decoration: none;
+    color: inherit;
+    background: var(--bg-primary);
+}
+
+.bg-success,
+.bg-accepted {
+    background-color: var(--color-success-bg) !important;
+    color: var(--color-success) !important;
+}
+
+.bg-warning,
+.bg-pending {
+    background-color: var(--color-warning-bg) !important;
+    color: var(--color-warning-bg-dark, #b45309) !important;
+    /* Fixed dark text for visibility */
+}
+
+.bg-danger,
+.bg-rejected {
+    background-color: var(--color-error-bg) !important;
+    color: var(--color-error) !important;
+}
+
+/* Text Utilities */
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.text-primary {
+    color: var(--color-primary) !important;
+}
+
+.text-success {
+    color: var(--color-success) !important;
+}

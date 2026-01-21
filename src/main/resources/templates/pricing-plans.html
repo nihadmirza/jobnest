@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Choose Your Plan – JobNest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 3rem 0;
+        }
+
+        .pricing-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .pricing-card.featured {
+            border-color: #f59e0b;
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #10b981;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price span {
+            font-size: 1rem;
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        .plan-duration {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+            min-height: 200px;
+        }
+
+        .feature-list li {
+            padding: 0.75rem 0;
+            color: #374151;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li i {
+            color: #10b981;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-choose-plan {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-basic {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-basic:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: scale(1.02);
+        }
+
+        .btn-featured {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-featured:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            transform: scale(1.02);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .btn-premium:hover {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            transform: scale(1.02);
+        }
+
+        .job-info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .job-info-card h5 {
+            color: #1f2937;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .job-info-card p {
+            color: #6b7280;
+            margin: 0.5rem 0;
+        }
+
+        .plan-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .icon-basic {
+            color: #10b981;
+        }
+
+        .icon-featured {
+            color: #f59e0b;
+        }
+
+        .icon-premium {
+            color: #8b5cf6;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: white;
+            padding: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="pricing-header">
+            <h1>Choose Your Perfect Plan</h1>
+            <p>Select the best option to showcase your job posting</p>
+        </div>
+
+        <!-- Job Info -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-8">
+                <div class="job-info-card">
+                    <h5><i class="fa fa-briefcase me-2"></i>Your Job Post</h5>
+                    <p><strong>Title:</strong> <span th:text="${job.title}">Job Title</span></p>
+                    <p><strong>Location:</strong> <span th:text="${job.location}">Location</span></p>
+                    <p><strong>Type:</strong> <span th:text="${job.employmentType}">Full-time</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Check if plans exist -->
+        <div th:if="${plans == null or plans.isEmpty()}" class="empty-state">
+            <h3>No Pricing Plans Available</h3>
+            <p>Please contact support or check back later.</p>
+        </div>
+
+        <!-- Pricing Cards - Loop through plans dynamically -->
+        <div th:if="${plans != null and !plans.isEmpty()}" class="row g-4">
+            <!-- Thymeleaf EACH loop to render each plan -->
+            <div th:each="plan : ${plans}" class="col-lg-4 col-md-6">
+                <div class="pricing-card"
+                    th:classappend="${plan.planName.equalsIgnoreCase('Featured') ? 'featured' : ''}">
+
+                    <!-- Most Popular Badge (only for Featured plan) -->
+                    <div th:if="${plan.planName.equalsIgnoreCase('Featured')}" class="popular-badge">
+                        <i class="fa fa-star me-1"></i> MOST POPULAR
+                    </div>
+
+                    <!-- Plan Icon -->
+                    <div class="text-center">
+                        <i class="fa plan-icon" th:classappend="${plan.planName.equalsIgnoreCase('Basic') ? 'fa-rocket icon-basic' : 
+                                           (plan.planName.equalsIgnoreCase('Featured') ? 'fa-star icon-featured' : 
+                                           'fa-crown icon-premium')}">
+                        </i>
+                    </div>
+
+                    <!-- Plan Name (from database) -->
+                    <h3 class="plan-name text-center" th:text="${plan.planName}">Plan Name</h3>
+
+                    <!-- Price (from database) -->
+                    <div class="text-center">
+                        <div class="plan-price">
+                            $<span th:text="${#numbers.formatDecimal(plan.price, 1, 2)}">9.99</span>
+                        </div>
+                        <p class="plan-duration" th:text="${plan.durationDays + ' days active'}">30 days active</p>
+                    </div>
+
+                    <!-- Features List -->
+                    <ul class="feature-list">
+                        <!-- For Basic Plan -->
+                        <li th:if="${plan.planName.equalsIgnoreCase('Basic')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>30 days active listing</span>
+                        </li>
+                        <li th:if="${plan.planName.equalsIgnoreCase('Basic')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Standard placement</span>
+                        </li>
+                        <li th:if="${plan.planName.equalsIgnoreCase('Basic')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Email applications</span>
+                        </li>
+
+                        <!-- For Featured Plan -->
+                        <li th:if="${plan.planName.equalsIgnoreCase('Featured')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>60 days active listing</span>
+                        </li>
+                        <li th:if="${plan.planName.equalsIgnoreCase('Featured')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Highlighted in search results</span>
+                        </li>
+                        <li th:if="${plan.planName.equalsIgnoreCase('Featured')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Bold job title</span>
+                        </li>
+                        <li th:if="${plan.planName.equalsIgnoreCase('Featured')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Priority in job list</span>
+                        </li>
+
+                        <!-- For Premium Plan -->
+                        <li th:if="${plan.planName.equalsIgnoreCase('Premium')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>90 days active listing</span>
+                        </li>
+                        <li th:if="${plan.planName.equalsIgnoreCase('Premium')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Top placement guarantee</span>
+                        </li>
+                        <li th:if="${plan.planName.equalsIgnoreCase('Premium')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Featured badge</span>
+                        </li>
+                        <li th:if="${plan.planName.equalsIgnoreCase('Premium')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Company logo showcase</span>
+                        </li>
+                        <li th:if="${plan.planName.equalsIgnoreCase('Premium')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Highlighted background</span>
+                        </li>
+                        <li th:if="${plan.planName.equalsIgnoreCase('Premium')}">
+                            <i class="fa fa-check-circle"></i>
+                            <span>Priority support</span>
+                        </li>
+                    </ul>
+
+                    <!-- FORM: Choose Plan Button with jobId and planId -->
+                    <form th:action="@{/recruiter/checkout}" method="post">
+                        <!-- Hidden input for jobId -->
+                        <input type="hidden" name="jobId" th:value="${job.jobId}" />
+
+                        <!-- Hidden input for planId -->
+                        <input type="hidden" name="planId" th:value="${plan.planId}" />
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-choose-plan" th:classappend="${plan.planName.equalsIgnoreCase('Basic') ? 'btn-basic' : 
+                                                (plan.planName.equalsIgnoreCase('Featured') ? 'btn-featured' : 
+                                                'btn-premium')}">
+                            Choose <span th:text="${plan.planName}">Plan</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Note -->
+        <div class="text-center mt-5">
+            <p class="text-white-50">
+                <i class="fa fa-lock me-2"></i>
+                Secure payment powered by Stripe. Your payment information is encrypted and secure.
+            </p>
+        </div>
+    </div>
+
+    <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

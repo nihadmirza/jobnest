@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>JobNest – Browse Jobs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+
+<body class="bg-light-custom">
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                Job<span>Nest</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-md-2" th:if="${!#authorization.expression('isAuthenticated()')}">
+                        <a th:href="@{/login(role='CANDIDATE')}" class="btn btn-outline-primary btn-sm">Login</a>
+                    </li>
+                    <li class="nav-item ms-md-2" th:if="${#authorization.expression('isAuthenticated()')}">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <div class="row g-4">
+            <!-- Sidebar Filters -->
+            <div class="col-lg-3">
+                <div class="card border-0 shadow-sm sticky-top" style="top: 100px; z-index: 100;">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="fw-bold mb-0"><i class="fa-solid fa-filter me-2 icon-accent"></i> Filters</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/jobs}" method="get" id="filterForm">
+                            <!-- Hidden keyword input to preserve search term when filtering -->
+                            <input type="hidden" name="job" th:value="${keyword}">
+
+                            <!-- Location Filter -->
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Location</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i
+                                            class="fa-solid fa-location-dot text-muted"></i></span>
+                                    <input type="text" class="form-control border-start-0 bg-light" name="location"
+                                        th:value="${location}" placeholder="City, State...">
+                                </div>
+                            </div>
+
+                            <!-- Employment Type Filter -->
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted mb-3">Employment
+                                    Type</label>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="type" id="typeAll" value=""
+                                            th:checked="${type == null || type == ''}">
+                                        <label class="form-check-label" for="typeAll">All Types</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="type" id="typeFull"
+                                            value="Full-time" th:checked="${type == 'Full-time'}">
+                                        <label class="form-check-label" for="typeFull">Full-time</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="type" id="typePart"
+                                            value="Part-time" th:checked="${type == 'Part-time'}">
+                                        <label class="form-check-label" for="typePart">Part-time</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="type" id="typeRemote"
+                                            value="Remote" th:checked="${type == 'Remote'}">
+                                        <label class="form-check-label" for="typeRemote">Remote</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="type" id="typeContract"
+                                            value="Contract" th:checked="${type == 'Contract'}">
+                                        <label class="form-check-label" for="typeContract">Contract</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-modern">
+                                    Apply Filters
+                                </button>
+                                <a th:href="@{/jobs}" class="btn btn-outline-secondary btn-sm">Clear All</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <!-- Search Bar -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-2">
+                        <form th:action="@{/jobs}" method="get" class="d-flex align-items-center">
+                            <!-- Preserve filter values -->
+                            <input type="hidden" name="location" th:value="${location}">
+                            <input type="hidden" name="type" th:value="${type}">
+
+                            <div class="input-group input-group-lg border-0">
+                                <span class="input-group-text bg-transparent border-0"><i
+                                        class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                                <input type="text" class="form-control border-0 shadow-none" name="job"
+                                    th:value="${keyword}" placeholder="Search by job title, company, or keywords...">
+                                <button type="submit" class="btn btn-primary px-4 rounded-3 m-1 fw-bold">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Results Header -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">
+                        <span th:text="${jobs != null ? jobs.size() : 0}">0</span> Jobs Found
+                    </h5>
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle border" type="button"
+                            data-bs-toggle="dropdown">
+                            Sort by: Newest
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                            <li><a class="dropdown-item" href="#">Newest</a></li>
+                            <li><a class="dropdown-item" href="#">Oldest</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Job List -->
+                <div class="d-flex flex-column gap-3" th:if="${jobs != null and !jobs.isEmpty()}">
+                    <div th:each="job : ${jobs}">
+                        <a th:href="@{/jobs/{id}(id=${job.jobId})}"
+                            class="card card-modern text-decoration-none hover-lift h-100">
+                            <div class="card-body p-4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="bg-light rounded p-2 me-3 d-flex align-items-center justify-content-center"
+                                                style="width: 48px; height: 48px;">
+                                                <i class="fa-regular fa-building fa-lg icon-accent"></i>
+                                            </div>
+                                            <div>
+                                                <h5 class="job-title mb-0" th:text="${job.title}">Job Title</h5>
+                                                <small class="text-muted fw-semibold"
+                                                    th:text="${job.recruiter?.company ?: 'Confidential'}">Company</small>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-2 mt-2">
+                                            <span class="badge bg-light text-secondary border fw-normal">
+                                                <i class="fa-solid fa-location-dot me-1"></i> <span
+                                                    th:text="${job.location}">Loc</span>
+                                            </span>
+                                            <span class="badge bg-light text-dark border fw-normal">
+                                                <i class="fa-solid fa-briefcase me-1"></i> <span
+                                                    th:text="${job.employmentType ?: 'Full-time'}">Type</span>
+                                            </span>
+                                            <span class="badge bg-light text-success border fw-normal"
+                                                th:if="${job.salary}">
+                                                <i class="fa-solid fa-money-bill-wave me-1"></i> <span
+                                                    th:text="${job.salary}">Salary</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                        <small class="text-muted d-block mb-2"
+                                            th:text="${#dates.format(job.postedDate, 'MMM dd, yyyy')}">Date</small>
+                                        <span class="btn btn-outline-primary btn-sm rounded-pill px-3">View
+                                            Details</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- No Results State -->
+                <div th:if="${jobs == null or jobs.isEmpty()}"
+                    class="text-center py-5 bg-white rounded shadow-sm border">
+                    <div class="mb-3 opacity-25">
+                        <i class="fa-solid fa-magnifying-glass fa-4x text-muted"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark">No jobs found</h4>
+                    <p class="text-muted mb-4">We couldn't find any jobs matching your criteria.</p>
+                    <a th:href="@{/jobs}" class="btn btn-primary px-4">Clear All Filters</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p class="mb-0">Copyright © 2024 JobNest. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

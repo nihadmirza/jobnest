@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>JobNest – All Jobs (Admin)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+
+<body class="bg-light-custom">
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">Job<span>Nest</span></a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/dashboard}">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">All Jobs</h1>
+                <p class="text-muted">Manage job postings</p>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <i class="fa-solid fa-exclamation-circle me-2"></i>
+            <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0">
+                    <i class="fa-solid fa-briefcase me-2 text-success"></i>
+                    Job List (<span th:text="${jobs != null ? jobs.size() : 0}">0</span>)
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Location</th>
+                                <th>Posted Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="job : ${jobs}">
+                                <td th:text="${job.jobId}">#</td>
+                                <td>
+                                    <a th:href="@{/jobs/{id}(id=${job.jobId})}" class="text-decoration-none fw-semibold"
+                                        th:text="${job.title}">Job Title</a>
+                                </td>
+                                <td th:text="${job.recruiter?.company ?: 'N/A'}">Company</td>
+                                <td th:text="${job.location}">Location</td>
+                                <td th:text="${#dates.format(job.postedDate, 'MMM dd, yyyy')}">Date</td>
+                                <td>
+                                    <span th:if="${job.active}" class="badge bg-success">Active</span>
+                                    <span th:unless="${job.active}" class="badge bg-secondary">Archived</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p class="mb-0">Copyright © 2024 JobNest Admin Panel. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

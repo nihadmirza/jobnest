@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>JobNest – Job Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <style>
+        .job-hero {
+            background: linear-gradient(135deg, var(--primary-color), #2d3748);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-card {
+            position: sticky;
+            top: 100px;
+        }
+    </style>
+</head>
+
+<body class="bg-light-custom">
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                Job<span>Nest</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/jobs}">Browse Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="job-hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <a th:href="@{/jobs}" class="text-white-50 text-decoration-none small mb-3 d-inline-block">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Back to Jobs
+                    </a>
+                    <h1 class="fw-bold mb-2 text-white" th:text="${job.title}">Job Title</h1>
+                    <div class="d-flex flex-wrap gap-3 text-white-50 mb-0">
+                        <span th:if="${job.recruiter?.company}">
+                            <i class="fa-regular fa-building me-1"></i> <span
+                                th:text="${job.recruiter.company}">Company</span>
+                        </span>
+                        <span th:if="${job.location}">
+                            <i class="fa-solid fa-location-dot me-1"></i> <span
+                                th:text="${job.location}">Location</span>
+                        </span>
+                        <span th:text="${#dates.format(job.postedDate, 'MMM dd, yyyy')}">Date</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-lg-end d-flex align-items-center justify-content-lg-end mt-4 mt-lg-0">
+                    <span th:if="${hasApplied}" class="badge bg-success px-3 py-2 fs-6 shadow-sm">
+                        <i class="fa-solid fa-check me-2"></i> Application Submitted
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container pb-5">
+
+        <!-- Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm border-0 mb-4"
+            role="alert">
+            <i class="fa-solid fa-check-circle me-2"></i> <span th:text="${success}">Success</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0 mb-4"
+            role="alert">
+            <i class="fa-solid fa-exclamation-circle me-2"></i> <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row g-5">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <div class="card card-modern border-0 shadow-sm p-4 mb-4">
+                    <h4 class="fw-bold text-dark mb-4">Job Description</h4>
+
+                    <div class="text-muted" style="line-height: 1.8;" th:if="${job.description != null}"
+                        th:utext="${#strings.replace(#strings.replace(job.description, '\r\n', '&lt;br/&gt;'), '\n', '&lt;br/&gt;')}">
+                    </div>
+
+                    <div th:if="${job.description == null}" class="text-muted fst-italic">
+                        No detailed description provided.
+                    </div>
+                </div>
+
+                <!-- Application Form -->
+                <!-- Application Form (Only for Authenticated Job Seekers) -->
+                <div sec:authorize="hasAuthority('ROLE_JOB SEEKER')" th:if="${!hasApplied}"
+                    class="card card-modern border-0 shadow-sm p-4 bg-light-custom">
+                    <h4 class="fw-bold text-dark mb-3">Apply for this Position</h4>
+                    <form th:action="@{/jobs/{id}/apply(id=${job.jobId})}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-uppercase">Cover Letter</label>
+                            <textarea class="form-control" name="coverLetter" rows="5"
+                                placeholder="Explain why you are the best fit for this role..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-modern px-5 py-2">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Submit Application
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Recruiter Warning -->
+                <div sec:authorize="hasAuthority('ROLE_RECRUITER')" class="alert alert-warning shadow-sm">
+                    <i class="fa-solid fa-briefcase me-2"></i> Recruiters cannot apply for jobs.
+                </div>
+
+                <!-- Login Prompt / Alert for Non-Authenticated Users -->
+                <div sec:authorize="!isAuthenticated()" class="alert alert-info shadow-sm">
+                    <i class="fa-solid fa-circle-info me-2"></i> Interested in this position? Please
+                    <a th:href="@{/login(role='CANDIDATE')}" class="fw-bold">Login as a Job Seeker</a> to apply.
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="sidebar-card">
+                    <div class="card card-modern border-0 shadow-sm mb-4">
+                        <div class="card-header border-bottom">
+                            <h6 class="text-uppercase text-muted small fw-bold mb-0">Job Overview</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Posted Date</small>
+                                <span class="fw-bold text-dark"
+                                    th:text="${#dates.format(job.postedDate, 'MMMM dd, yyyy')}">Date</span>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Salary</small>
+                                <span class="fw-bold text-success"
+                                    th:text="${job.salary ?: 'Not Disclosed'}">Salary</span>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Employment Type</small>
+                                <span class="badge bg-light text-dark border"
+                                    th:text="${job.employmentType ?: 'Full-time'}">Type</span>
+                            </div>
+                            <div class="mb-0">
+                                <small class="text-muted d-block">Location</small>
+                                <span class="fw-bold text-dark"
+                                    th:text="${job.location ?: 'Remote/On-site'}">Location</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <a th:href="@{/global-search}" class="text-decoration-none small fw-bold text-muted">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i> Search more jobs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="container text-center py-4 text-muted small">
+            <p class="mb-0">Copyright © 2024 JobNest. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

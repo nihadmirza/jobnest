@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Payment Successful – JobNest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .success-container {
+            background: white;
+            border-radius: 25px;
+            padding: 3rem;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .success-icon i {
+            font-size: 3rem;
+            color: white;
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            color: #1f2937;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .payment-details {
+            background: #f9fafb;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .payment-details h5 {
+            color: #1f2937;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .plan-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .badge-basic {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-featured {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-premium {
+            background: #ede9fe;
+            color: #6b21a8;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-custom {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary-custom {
+            background: white;
+            color: #10b981;
+            border: 2px solid #10b981;
+        }
+
+        .btn-secondary-custom:hover {
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="success-container">
+        <!-- Success Icon -->
+        <div class="success-icon">
+            <i class="fa fa-check"></i>
+        </div>
+
+        <!-- Title -->
+        <h1>Payment Successful!</h1>
+        <p class="subtitle">Your job posting is now live and visible to candidates</p>
+
+        <!-- Payment Details -->
+        <div class="payment-details">
+            <h5><i class="fa fa-receipt me-2"></i>Payment Details</h5>
+
+            <div class="detail-row">
+                <span class="detail-label">Job Title</span>
+                <span class="detail-value" th:text="${job.title}">Job Title</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Plan</span>
+                <span class="detail-value">
+                    <span class="plan-badge"
+                        th:classappend="${plan.basic ? 'badge-basic' : (plan.featured ? 'badge-featured' : 'badge-premium')}"
+                        th:text="${plan.planName}">Plan Name</span>
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Duration</span>
+                <span class="detail-value" th:text="${plan.durationDays + ' days'}">30 days</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Amount Paid</span>
+                <span class="detail-value" th:text="${transaction.formattedAmount}">$9.99</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Status</span>
+                <span class="detail-value">
+                    <span class="badge bg-success">Active</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a th:href="@{/recruiter/jobs}" class="btn btn-primary-custom">
+                <i class="fa fa-list me-2"></i>View My Jobs
+            </a>
+            <a th:href="@{/recruiter/jobs/new}" class="btn btn-secondary-custom">
+                <i class="fa fa-plus me-2"></i>Post Another
+            </a>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="mt-4">
+            <p class="text-muted small">
+                <i class="fa fa-info-circle me-1"></i>
+                A receipt has been sent to your email address
+            </p>
+        </div>
+    </div>
+
+    <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

@@ -1,869 +1,232 @@
-/* =========================
-   Global reset & typography
-   ========================= */
-html {
-  box-sizing: border-box;
-  height: 100%;
-  width: 100%;
+/**
+ * JobNest Legacy Styles (Deprecated - Use theme.css instead)
+ * This file contains only legacy styles that haven't been migrated yet
+ * TODO: Migrate remaining styles to theme.css and remove this file
+ */
+
+/* Legacy variables for backward compatibility */
+:root {
+    --primary-color: #0f172a;
+    --secondary-color: #10b981;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --status-rejected: #ef4444;
+    --status-approved: #10b981;
+    --status-pending: #f59e0b;
 }
 
-* {
-  box-sizing: inherit;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-  Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+/* Legacy utility classes - will be removed after migration */
+.text-primary-custom {
+    color: var(--secondary-color) !important;
 }
 
-body {
-  font-family: 'Roboto', sans-serif;
-  font-weight: normal;
-  font-style: normal;
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  width: 100%;
+.text-secondary-custom {
+    color: var(--secondary-color) !important;
 }
 
-/* =========================
-   Links
-   ========================= */
-a:focus,
-.button:focus,
-button:focus {
-  text-decoration: none;
-  outline: none;
+.bg-light-custom {
+    background-color: var(--bg-body) !important;
 }
 
-a:focus {
-  text-decoration: none;
+/* Legacy hover utilities */
+.hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-a:focus,
-a:hover {
-  text-decoration: none !important;
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
 }
 
-a {
-  text-decoration: none !important;
+.hover-bg-light:hover {
+    background-color: var(--bg-body) !important;
 }
 
-a.white {
-  color: white !important;
+/* Legacy card styles - use .card from theme.css instead */
+.card-modern {
+    border-radius: var(--border-radius);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
-a.black {
-  color: black !important;
+/* Legacy button styles - use .btn-primary from theme.css instead */
+.btn-modern {
+    border-radius: var(--border-radius-pill);
+    font-weight: 600;
 }
 
-a.primary {
-  color: #002244 !important;
+/* Legacy profile styles - to be migrated */
+.profile-header-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
 }
 
-a.color-text,
-a.color-text:hover {
-  color: #fb4f14;
+.profile-cover {
+    height: 150px;
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
 }
 
-/* =========================
-   Background (landing) – BAKU
-   ========================= */
-
-.background {
-  width: 100vw;
-  min-height: 100vh;
-  overflow-x: hidden;
-  background-image: linear-gradient(
-          to right,
-          rgba(0, 34, 68, 0.8),
-          rgba(0, 34, 68, 0.8)
-  ),
-  url('../assets/baku.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+.profile-info-container {
+    padding: 0 2rem 2rem;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 2rem;
+    margin-top: -85px;
+    /* Overlap half of the 170px avatar */
 }
 
-/* =========================
-   Top Navbar (JobNest)
-   ========================= */
-.main_div {
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.2rem 3rem;
+.profile-avatar {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    border: 5px solid white;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--primary-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
+    /* Prevent shrinking */
+    overflow: hidden;
+    /* Ensure image stays in circle */
 }
 
-.logo_left {
-  font-size: 1.4rem;
-  color: white;
-  font-weight: 800;
-  letter-spacing: 1px;
-  display: flex;
-  align-items: center;
+/* Added specific class for edit profile pages */
+.avatar-xl {
+    width: 150px;
+    height: 150px;
+    flex-shrink: 0;
 }
 
-.logo_left .logo {
-  text-transform: uppercase;
+.profile-avatar img,
+.avatar-xl img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.logo_left .logo_com {
-  margin-left: 6px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  color: white;
-  background-color: #fb4f14;
-  font-size: 0.8rem;
-  letter-spacing: 0.5px;
+@media (max-width: 768px) {
+    .profile-info-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-top: -60px;
+        gap: 1rem;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-width: 4px;
+    }
+
+    .avatar-xl {
+        width: 120px;
+        height: 120px;
+    }
 }
 
-/* Sağ tərəf loginlər */
-.logo_right {
-  display: flex;
-  font-size: 0.95rem;
-  color: white;
-  gap: 0.75rem;
+/* Legacy hero section - to be migrated */
+.hero-section {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: white;
+    padding: 6rem 0 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Label-lar sadə konteynerdir */
-.logo_right .Candidate_login_btn,
-.logo_right .Recruiter_login_btn {
-  background: transparent;
-  padding: 0;
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* Ümumi link stili */
-.logo_right .Candidate_login_btn a,
-.logo_right .Recruiter_login_btn a {
-  color: #ffffff;
-  margin: 0 4px;
-  font-weight: 500;
-}
-
-/* Əsas “Login” düymələri */
-.logo_right .Candidate_login_btn a:first-child,
-.logo_right .Recruiter_login_btn a:first-child {
-  padding: 8px 16px;
-  border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-/* Hover effekti */
-.logo_right .Candidate_login_btn a:first-child:hover,
-.logo_right .Recruiter_login_btn a:first-child:hover {
-  background-color: #fb4f14;
-  transform: translateY(-1px);
-}
-
-/* "/ Register" daha sakit */
-.logo_right .Candidate_login_btn a:last-child,
-.logo_right .Recruiter_login_btn a:last-child {
-  font-size: 0.9rem;
-  opacity: 0.85;
-}
-
-label > a {
-  text-decoration: none;
-  color: white;
-}
-
-label > a:hover {
-  text-decoration: none;
-  color: white;
-}
-
-/* =========================
-   Hero Section + Search
-   ========================= */
-.hero {
-  min-height: calc(100vh - 80px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 1.5rem;
-}
-
-.hero-content {
-  max-width: 720px;
-  color: white;
-  text-align: center;
-}
-
-.primary-title {
-  font-family: 'Montserrat', sans-serif;
-  font-style: normal;
-  font-weight: 900;
-  font-size: 40px;
-  line-height: 49px;
-  margin-bottom: 16px;
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .hero-subtitle {
-  font-size: 1rem;
-  line-height: 1.6;
-  max-width: 600px;
-  margin: 0 auto;
-  opacity: 0.95;
+    font-size: 1.25rem;
+    color: #cbd5e1;
+    max-width: 600px;
+    margin: 0 auto 3rem;
 }
 
-/* Search box */
-.searchBox {
-  width: 100%;
-  max-width: 720px;
-  margin: 1.75rem auto 0;
+.search-box {
+    background: white;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-.inner {
-  padding: 8px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.25);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+/* Legacy stats strip */
+.stats-strip {
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+    padding: 2rem 0;
 }
 
-.inner input {
-  flex: 1 1 220px;
-  min-width: 0;
-  margin: 0;
-  padding: 10px 12px;
-  font-size: 1rem;
-  height: 50px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
+.stat-item {
+    text-align: center;
 }
 
-.radius-left {
-  border-radius: 10px;
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--secondary-color);
 }
 
-.radius-right {
-  border-radius: 10px;
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
-/* Search düyməsi */
-.hero-search-btn {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0 20px;
-  height: 50px;
-  border: none;
-  border-radius: 10px;
-  background-color: #fb4f14;
-  color: white;
-  font-weight: 500;
-  cursor: pointer;
+/* Legacy footer */
+footer {
+    margin-top: auto;
+    background: white;
+    border-top: 1px solid var(--border-color);
+    padding: 2rem 0;
+    text-align: center;
+    color: var(--text-muted);
 }
 
-.hero-search-btn i {
-  margin: 0;
-}
-
-/* =========================
-   Footer
-   ========================= */
-.copy-right {
-  color: white;
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  display: block;
-  text-align: center;
-  padding: 10px 0;
-  background: transparent;
-  font-size: 0.9rem;
-  opacity: 0.9;
-}
-
-/* =========================
-   Inner pages navbar (əgər istifadə edəcəksənsə)
-   ========================= */
-header.navbar {
-  height: 80px;
-  background-color: #002244;
-}
-
-header .navbar-nav {
-  padding: 9px;
-}
-
-header.navbar > label {
-  margin-left: 3%;
-}
-
-label.nav-item {
-  color: white;
-  box-sizing: border-box;
-  display: inline-block;
-  margin-bottom: 0;
-}
-
-ul.navbar-nav li.nav-item a {
-  color: white !important;
-}
-
-ul.navbar-nav li.nav-item.active a {
-  color: #fb4f14 !important;
-}
-
-.navbar button.myBtn-light {
-  margin: 0 1.25rem;
-}
-
-a.nav-link > i {
-  margin-right: 8px;
-  margin-left: 15px;
-}
-
-/* =========================
-   Job list layout (sidebar + content)
-   ========================= */
-section.section {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  height: calc(100% - 80px);
-}
-
-.sidenav {
-  overflow: auto;
-  background-color: #002244;
-  padding-top: 20px;
-  color: white;
-  width: 300px;
-  flex: 0 0 auto;
-}
-
-label.color-dull {
-  color: #365a7e;
-}
-
-div.sidenav form .form-check {
-  margin: 5px;
-  font-weight: 300;
-}
-
-article {
-  padding: 10px;
-  background-color: #f5f5f5;
-  flex: 1 1 auto;
-  overflow-y: auto;
-}
-
-div.box {
-  border-radius: 25px;
-  background-color: white;
-  padding: 20px;
-  box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.15);
-}
-
-.box .job-row:hover {
-  transition: all 100ms ease-in-out;
-  transform: scale(1.01);
-  opacity: 1;
-  border-radius: 10px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
-}
-
-label.large-label {
-  font-style: normal;
-  font-size: 24px;
-  line-height: 29px;
-  font-weight: 500;
-  color: black;
-}
-
-.job-title {
-  font-style: normal;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 24px;
-  color: #002244;
-}
-
-.job-row {
-  align-items: center;
-  justify-content: space-around;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  padding: 8px;
-  margin: 20px 10px;
-}
-
-.job-row div label {
-  display: block;
-  margin: 0;
-  padding: 5px;
-}
-
-.form-group select.form-control {
-  height: 54px !important;
-}
-
-/* =========================
-   Login & forms (background)
-   ========================= */
-.hidden-overflow {
-  overflow: hidden;
-}
-
-.coffee_mug_background {
-  height: 100vh;
-  overflow: hidden;
-  background-image: linear-gradient(
-          to right,
-          rgba(0, 34, 68, 0.5),
-          rgba(0, 34, 68, 0.5)
-  ),
-  url('../assets/registerBackground.jpg'); /* öz şəklin */
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment: fixed;
-}
-
-/* Köhnə form layout (əgər başqa form səhifələrdə istifadə edəcəksənsə) */
-.myForm > form input {
-  padding: 15px 10px;
-  margin: 4px 0;
-  line-height: 140%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-}
-
-.basic_select {
-  padding: 15px 10px;
-  line-height: 140%;
-}
-
-.job_Spec_box {
-  padding: 5px;
-  display: flex;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.top-margin {
-  margin-top: 25%;
-}
-
-.heading_font {
-  font-family: 'Montserrat', sans-serif;
-}
-
-.font_sub_heading_color {
-  color: #002244;
-  text-transform: uppercase;
-}
-
-.base_button {
-  background-color: #fb4f14;
-  border: none;
-}
-
-#check:checked::before {
-  color: #fb4f14;
-  border: #fb4f14;
-}
-
-/* =========================
-   Buttons
-   ========================= */
-.myBtn {
-  background-color: #fb4f14;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  width: 100%;
-  padding: 2%;
-  font-weight: bolder;
-  font-size: large;
-  height: 100%;
-}
-
-.myBtn-light {
-  box-sizing: border-box;
-  background-color: #fb4f14;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  padding: 5px 10px;
-  display: inline;
-  font-weight: bold;
-}
-
-.btn-sec {
-  display: inline-block;
-  padding: 13px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  border: 1px solid transparent;
-  text-align: center;
-  color: #fff !important;
-  border-radius: 5px;
-  text-transform: capitalize;
-  transition: 0.3s;
-  cursor: pointer;
-}
-
-.btn-sec.btn-red {
-  background: #fb4f14;
-}
-
-.btn-sec.btn-black {
-  background: #191d34;
-}
-
-span.title-span {
-  font-size: 14px;
-  font-weight: 400;
-}
-
-div.centerCandidate {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.candidatesApplied {
-  font-family: 'Montserrat', sans-serif;
-  font-style: normal;
-  padding: 15px;
-  background-color: #002244;
-  color: white;
-  border-radius: 10px;
-  line-height: 0.75;
-}
-
-.candidatesApplied > label {
-  margin-bottom: 20px;
-  font-weight: 700;
-}
-
-/* =========================
-   Utility margins
-   ========================= */
-.mr-1 {
-  margin-right: 0.25rem;
-}
-
-.mr-2 {
-  margin-right: 0.5rem;
-}
-
-.mr-3 {
-  margin-right: 0.75rem;
-}
-
-.mr-4 {
-  margin-right: 1rem;
-}
-
-.mr-5 {
-  margin-right: 1.25rem;
-}
-
-/* =========================
-   Register / Login layout (yanında şəkil)
-   ========================= */
-.myForm {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 80px);
-  padding: 20px 16px 40px;
-  overflow-y: auto;
-}
-
-.auth-container {
-  display: flex;
-  gap: 2rem;
-  align-items: stretch;
-  justify-content: center;
-  width: 100%;
-  max-width: 960px;
-  margin-top: 20px;
-}
-
-.auth-illustration {
-  flex: 1 1 40%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.auth-illustration img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 16px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-  object-fit: cover;
-}
-
-.auth-card {
-  background-color: rgba(255, 255, 255, 0.97);
-  border-radius: 12px;
-  padding: 18px 22px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
-  max-width: 420px;
-  width: 100%;
-}
-
-.auth-card h2 {
-  font-size: 1.4rem;
-  margin-bottom: 0.5rem;
-}
-
-.auth-card p {
-  margin-bottom: 0.75rem;
-  font-size: 0.9rem;
-}
-
-/* Role toggle pill */
-.role-toggle {
-  display: inline-flex;
-  padding: 4px;
-  border-radius: 999px;
-  background: #eef3fa;
-}
-
-.role-toggle a {
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  color: #002244;
-  opacity: 0.7;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.role-toggle a.active {
-  background: #fb4f14;
-  color: #ffffff;
-  opacity: 1;
-}
-
-/* =========================
-   Responsive tweaks
-   ========================= */
+/* Responsive */
 @media (max-width: 768px) {
-  .main_div {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem 1.5rem;
-  }
+    .search-box {
+        flex-direction: column;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+    }
 
-  .hero {
-    padding: 2rem 1.5rem 4rem;
-    align-items: flex-start;
-  }
+    .search-box input {
+        height: 50px;
+    }
 
-  .logo_right {
-    margin-top: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .primary-title {
-    font-size: 30px;
-    line-height: 38px;
-  }
-
-  .inner {
-    flex-direction: column;
-  }
-
-  .inner input {
-    width: 100%;
-  }
-
-  .hero-search-btn {
-    width: 100%;
-  }
-
-  .auth-container {
-    flex-direction: column;
-    padding: 0 8px;
-    margin-top: 16px;
-  }
-
-  .auth-illustration {
-    display: none;
-  }
+    .hero-title {
+        font-size: 2.5rem;
+    }
 }
-
-.logo_right .Candidate_login_btn a:last-child,
-.logo_right .Recruiter_login_btn a:last-child {
-  background-color: rgba(251, 79, 20, 0.9);
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-}
-
-.logo_right .Candidate_login_btn a:last-child:hover,
-.logo_right .Recruiter_login_btn a:last-child:hover {
-  background-color: #fb4f14;
-  transform: translateY(-1px);
-}
-
-/* =========================
-   Register / Login layout – fix
-   ========================= */
-
-/* Register səhifəsinin əsas containeri */
-.myForm {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 80px);
-  padding: 24px 16px 40px;
-  overflow-y: auto;
-}
-
-/* Form + şəkil yan-yana */
-.auth-container {
-  display: flex;
-  gap: 2rem;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 900px;
-  margin-top: 0; /* əvvəlki marginləri sıfırladıq */
-}
-
-/* Soldakı şəkil */
-.auth-illustration {
-  flex: 1 1 45%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.auth-illustration img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 14px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
-  object-fit: cover;
-}
-
-/* Form kartı – daha kompakt */
-.auth-card {
-  flex: 0 0 360px;
-  background-color: rgba(255, 255, 255, 0.97);
-  border-radius: 12px;
-  padding: 18px 20px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* Kiçik, səliqəli title */
-.auth-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #002244;
-  margin: 0 0 0.25rem 0;
-}
-
-/* Role label – balaca yazı üstündə */
-.role-label {
-  display: inline-block;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #6c757d;
-  margin-bottom: 0.25rem;
-}
-
-/* Subtitle – nazik text */
-.auth-subtitle {
-  font-size: 0.85rem;
-  color: #6c757d;
-  margin: 0 0 0.5rem 0;
-}
-
-/* Form içi aralıqlar */
-.auth-card .form-label {
-  font-size: 0.9rem;
-  margin-bottom: 0.2rem;
-}
-
-.auth-card .form-control {
-  padding: 8px 10px;
-  font-size: 0.9rem;
-}
-
-/* Submit düyməsi bir az daha balaca olsun */
-.auth-submit-btn {
-  padding: 8px 10px;
-  font-size: 0.95rem;
-}
-
-/* Aşağıdakı “Already have an account?” yazısı */
-.small-text {
-  font-size: 0.8rem;
-  margin-bottom: 0;
-}
-
-/* Role toggle pill – olduğu kimi, amma bir az sıx */
-.role-toggle {
-  display: inline-flex;
-  padding: 3px;
-  border-radius: 999px;
-  background: #eef3fa;
-  margin-bottom: 0.5rem;
-}
-
-.role-toggle a {
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  color: #002244;
-  opacity: 0.7;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.role-toggle a.active {
-  background: #fb4f14;
-  color: #ffffff;
-  opacity: 1;
-}
-
-/* Mobil üçün – şəkli gizlət, form tam ekran */
-@media (max-width: 768px) {
-  .auth-container {
-    flex-direction: column;
-    max-width: 100%;
-  }
-
-  .auth-illustration {
-    display: none !important;
-  }
-
-  .auth-card {
-    width: 100%;
-    max-width: 380px;
-  }
-}
-/* Navbar candidate / recruiter align fix */
-.logo_right .Candidate_login_btn,
-.logo_right .Recruiter_login_btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.logo_right .Candidate_login_btn a,
-.logo_right .Recruiter_login_btn a {
-  margin: 0; /* sağ-sol boşluqları azaldırıq */
-}
-
