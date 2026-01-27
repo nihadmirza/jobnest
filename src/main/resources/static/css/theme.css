@@ -697,6 +697,42 @@ body {
     min-height: 100vh;
 }
 
+/* =========================================
+   RESPONSIVE FIXES (Mobile image clarity)
+   ========================================= */
+@media (max-width: 768px) {
+    /* Reduce extreme hero spacing on mobile */
+    .hero-section {
+        padding: 120px 0 64px;
+        min-height: auto;
+    }
+
+    /*
+     * Mobile browsers can render transformed/filtered images slightly blurry.
+     * Disable 3D transform on mobile to keep images crisp.
+     */
+    .hero-image {
+        transform: none;
+        object-fit: cover;
+        filter: none;
+        border-radius: 20px;
+    }
+
+    /* Make the "Reach Top Talent Worldwide" image crisp + full width on mobile */
+    .world-map {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-radius: 20px;
+        transform: none;
+        filter: none;
+    }
+
+    .world-map-wrapper {
+        margin-top: 1.5rem;
+    }
+}
+
 footer {
     margin-top: auto;
 }

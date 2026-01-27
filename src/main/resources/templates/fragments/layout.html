@@ -81,7 +81,7 @@
                 <a href="#" class="footer-link">Guide</a>
             </div>
             <div class="text-center mt-4" style="color: rgba(255, 255, 255, 0.5);">
-                <p>&copy; 2024 JobNest. All rights reserved.</p>
+                <p>&copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2026</span> JobNest. All rights reserved.</p>
             </div>
         </div>
     </footer>
