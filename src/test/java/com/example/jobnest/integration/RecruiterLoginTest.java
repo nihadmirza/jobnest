@@ -2,12 +2,12 @@ package com.example.jobnest.integration;
 
 import com.example.jobnest.dto.request.UserRegistrationRequest;
 import com.example.jobnest.services.UsersService;
-import com.example.jobnest.services.UsersTypeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
+@SuppressWarnings("null")
 public class RecruiterLoginTest {
 
     @Autowired
@@ -29,12 +30,15 @@ public class RecruiterLoginTest {
     private UsersService usersService;
 
     @Autowired
-    private UsersTypeService usersTypeService;
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     public void setup() {
-        // Ensure UsersType IDs exist
-        // Assuming data.sql runs, or we might need to pre-populate if using H2
+        // Ensure UsersType IDs exist (tests run with H2 + spring.sql.init.mode=never)
+        // 'MERGE' works in H2 to upsert by primary key
+        jdbcTemplate.update("MERGE INTO users_type (user_type_id, user_type_name) KEY(user_type_id) VALUES (1, 'Recruiter')");
+        jdbcTemplate.update("MERGE INTO users_type (user_type_id, user_type_name) KEY(user_type_id) VALUES (2, 'Job Seeker')");
+        jdbcTemplate.update("MERGE INTO users_type (user_type_id, user_type_name) KEY(user_type_id) VALUES (3, 'Admin')");
     }
 
     @Test

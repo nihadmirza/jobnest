@@ -4,6 +4,7 @@ import com.example.jobnest.exception.FileStorageException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,7 +55,13 @@ class FileStorageServiceImplTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     void storeResume_writesFileAndReturnsRelativePath() throws Exception {
+        // Configure service to write into the temporary directory (unit test = no Spring injection)
+        Object svc = fileStorageService;
+        ReflectionTestUtils.setField(svc, "uploadDir", tempDir.toString());
+        ReflectionTestUtils.invokeMethod(svc, "init");
+
         MockMultipartFile resume = new MockMultipartFile(
                 "resume", "cv.pdf", "application/pdf", "pdf".getBytes());
 
@@ -62,7 +69,7 @@ class FileStorageServiceImplTest {
 
         assertTrue(relativePath.startsWith("/uploads/"));
         String fileName = relativePath.replace("/uploads/", "");
-        Path stored = Paths.get("src/main/resources/static/uploads").resolve(fileName);
+        Path stored = tempDir.resolve(fileName);
         assertTrue(Files.exists(stored));
 
         assertTrue(fileStorageService.deleteFile(stored.toString()));

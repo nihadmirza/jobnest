@@ -2,6 +2,8 @@ package com.example.jobnest.services.impl;
 
 import com.example.jobnest.exception.FileStorageException;
 import com.example.jobnest.services.FileStorageService;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import lombok.extern.slf4j.Slf4j;
@@ -20,25 +22,22 @@ import java.nio.file.StandardCopyOption;
 @Slf4j
 public class FileStorageServiceImpl implements FileStorageService {
 
-    private static final String UPLOAD_DIR = "src/main/resources/static/uploads/";
+    @Value("${app.upload-dir:./uploads}")
+    private String uploadDir;
 
-    static {
-        // Create uploads directory if it doesn't exist
+    private Path uploadPath;
+
+    @PostConstruct
+    void init() {
         try {
-            Path uploadPath = Paths.get(UPLOAD_DIR);
+            uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
         } catch (Exception e) {
-            // Cannot use 'log' here if it's not initialized yet?
-            // @Slf4j creates: private static final org.slf4j.Logger log = ...
-            // So it should be available in static block if initialized before.
-            // However, it's safer to use LoggerFactory explicitly or just assume it works.
-            // Actually, static block runs at class loading. 'log' field is static final.
-            // It depends on initialization order. Fields are initialized in order.
-            // 'log' is inserted by Lombok. usually it works.
-            org.slf4j.LoggerFactory.getLogger(FileStorageServiceImpl.class)
-                    .error("Failed to create uploads directory: ", e);
+            log.error("Failed to create uploads directory: {}", uploadDir, e);
+            // Let the app still start; uploads will fail with a clear exception later.
+            uploadPath = Paths.get("./uploads").toAbsolutePath().normalize();
         }
     }
 
@@ -88,16 +87,15 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
 
         try {
-            // Create upload directory if it doesn't exist
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
+            // Ensure directory exists (init() should have created it)
+            if (uploadPath == null) {
+                init();
             }
 
             // Generate unique filename
             String fileName = "resume_" + userId + "_" + System.currentTimeMillis() + "_"
                     + resume.getOriginalFilename();
-            Path filePath = uploadPath.resolve(fileName);
+            Path filePath = uploadPath.resolve(fileName).normalize();
 
             // Copy file to destination
             Files.copy(resume.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);

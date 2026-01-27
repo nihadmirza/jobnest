@@ -17,7 +17,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@ConditionalOnProperty(name = "app.admin.auto-create", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "app.admin.auto-create", havingValue = "true", matchIfMissing = false)
 public class AdminUserInitializer implements CommandLineRunner {
 
     private final UsersRepository usersRepository;
@@ -25,7 +25,7 @@ public class AdminUserInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     private static final String ADMIN_EMAIL = "admin@jobnest.com";
-    @org.springframework.beans.factory.annotation.Value("${app.admin.password:Admin@2024}")
+    @org.springframework.beans.factory.annotation.Value("${app.admin.password:}")
     private String adminPassword;
     private static final int ADMIN_TYPE_ID = 3;
 
@@ -38,6 +38,11 @@ public class AdminUserInitializer implements CommandLineRunner {
 
         if (existingAdmin.isPresent()) {
             log.info("Admin user already exists: {}", ADMIN_EMAIL);
+            return;
+        }
+
+        if (adminPassword == null || adminPassword.isBlank()) {
+            log.error("Admin password is not configured. Set 'app.admin.password' or APP_ADMIN_PASSWORD.");
             return;
         }
 
@@ -62,7 +67,7 @@ public class AdminUserInitializer implements CommandLineRunner {
 
         log.info("✅ Admin user created successfully!");
         log.info("   Email: {}", ADMIN_EMAIL);
-        log.info("   Password: {}", adminPassword);
+        log.info("   Password: (hidden)");
         log.info("   Please change the password after first login for security.");
         log.info("   To disable auto-creation, set 'app.admin.auto-create=false' in application.properties");
     }

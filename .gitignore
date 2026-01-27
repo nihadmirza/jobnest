@@ -37,4 +37,12 @@ out/
 .vscode/
 
 ### Application config ###
-src/main/resources/application.properties
+# Keep safe, env-driven application.properties committed.
+# Ignore local-only overrides and secrets.
+src/main/resources/application-local.properties
+.env
+.env.*
+
+### Uploads (must not be committed) ###
+uploads/
+src/main/resources/static/uploads/

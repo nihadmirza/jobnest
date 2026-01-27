@@ -5,12 +5,46 @@ services:
     environment:
       POSTGRES_DB: jobnest_db
       POSTGRES_USER: jobnest
-      POSTGRES_PASSWORD: secret123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret123}
     ports:
       - "5432:5432"
     volumes:
       - jobnest-data:/var/lib/postgresql/data
 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jobnest-app
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      APP_URL: ${APP_URL:-http://localhost:8080}
+      UPLOAD_DIR: /data/uploads
+
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/jobnest_db}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-jobnest}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-secret123}
+
+      # Stripe / Mail / Remember-me (set in your environment for real prod)
+      STRIPE_API_KEY: ${STRIPE_API_KEY:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_SUCCESS_URL: ${STRIPE_SUCCESS_URL:-http://localhost:8080/payment/success}
+      STRIPE_CANCEL_URL: ${STRIPE_CANCEL_URL:-http://localhost:8080/payment/cancel}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      REMEMBER_ME_KEY: ${REMEMBER_ME_KEY:-}
+      REMEMBER_ME_ADMIN_KEY: ${REMEMBER_ME_ADMIN_KEY:-}
+      APP_ADMIN_AUTO_CREATE: ${APP_ADMIN_AUTO_CREATE:-false}
+      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD:-}
+    volumes:
+      - jobnest-uploads:/data/uploads
+
 
 volumes:
   jobnest-data:
+  jobnest-uploads:

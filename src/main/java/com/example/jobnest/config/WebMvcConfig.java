@@ -1,6 +1,8 @@
 package com.example.jobnest.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +15,13 @@ import java.nio.file.Paths;
 @Slf4j
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    @Value("${app.upload-dir:./uploads}")
+    private String uploadDir;
+
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Map /uploads/to the file system uploads directory
-        Path uploadPath = Paths.get("src/main/resources/static/uploads");
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
+        // Map /uploads/** to a writable file system directory (NOT inside classpath resources)
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
 
         // Create directory if it doesn't exist
         try {
@@ -27,10 +32,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
             log.error("Failed to create uploads directory: ", e);
         }
 
-        String uploadAbsolutePath = uploadPath.toFile().getAbsolutePath();
-
         // Ensure the path ends with a separator and handle Windows paths
-        String uploadPathString = uploadAbsolutePath.replace("\\", "/");
+        String uploadPathString = uploadPath.toString().replace("\\", "/");
         if (!uploadPathString.endsWith("/")) {
             uploadPathString += "/";
         }

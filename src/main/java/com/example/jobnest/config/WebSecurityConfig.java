@@ -2,6 +2,7 @@ package com.example.jobnest.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +22,12 @@ public class WebSecurityConfig {
 
         private final com.example.jobnest.config.CustomAuthenticationFailureHandler authenticationFailureHandler;
         private final com.example.jobnest.config.CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+
+        @Value("${security.rememberme.admin-key:}")
+        private String adminRememberMeKey;
+
+        @Value("${security.rememberme.user-key:}")
+        private String userRememberMeKey;
 
         private final String[] publicUrl = {
                         "/",
@@ -69,7 +76,7 @@ public class WebSecurityConfig {
                                                 .logoutSuccessUrl(ADMIN_LOGIN_URL + "?logout=true")
                                                 .permitAll())
                                 .rememberMe(remember -> remember
-                                                .key("admin-secret-key")
+                                                .key(adminRememberMeKey)
                                                 .tokenValiditySeconds(86400 * 7)); // 7 days
 
                 return http.build();
@@ -95,7 +102,7 @@ public class WebSecurityConfig {
                                                 .logoutSuccessUrl("/")
                                                 .permitAll())
                                 .rememberMe(remember -> remember
-                                                .key("uniqueAndSecret")
+                                                .key(userRememberMeKey)
                                                 .tokenValiditySeconds(86400 * 7)); // 7 days
                 // CSRF is enabled by default, so we removed .csrf(disable)
 
