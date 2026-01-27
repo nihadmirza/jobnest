@@ -1,41 +1,36 @@
 package com.example.jobnest.controller;
 
 import com.example.jobnest.dto.request.ProfileUpdateRequest;
+import com.example.jobnest.dto.response.RecruiterProfileEditPageDTO;
 import com.example.jobnest.entity.RecruiterProfile;
 import com.example.jobnest.entity.Users;
-import com.example.jobnest.services.AuthenticationService;
-import com.example.jobnest.services.ProfileService;
+import com.example.jobnest.services.RecruiterProfilePageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@WebMvcTest(RecruiterProfileController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@SuppressWarnings("null")
 class RecruiterProfileControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private ProfileService profileService;
-
-    @MockBean
-    private AuthenticationService authenticationService;
+    private RecruiterProfilePageService recruiterProfilePageService;
 
     private Users user;
     private RecruiterProfile profile;
@@ -54,21 +49,26 @@ class RecruiterProfileControllerTest {
     @Test
     @WithMockUser
     void editProfile_ShouldReturnEditView() throws Exception {
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(user);
-        when(profileService.getRecruiterProfile(1)).thenReturn(profile);
+        when(recruiterProfilePageService.editProfilePage()).thenReturn(
+                new RecruiterProfilePageService.PageResult("recruiter-profile-edit",
+                        java.util.Map.of("page", RecruiterProfileEditPageDTO.builder()
+                                .user(user)
+                                .profile(profile)
+                                .build()))
+        );
 
         mockMvc.perform(get("/recruiter/profile/edit"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recruiter-profile-edit"))
-                .andExpect(model().attributeExists("profile"))
-                .andExpect(model().attributeExists("user"));
+                .andExpect(model().attributeExists("page"));
     }
 
     @Test
     @WithMockUser
     void updateProfile_ShouldRedirectToDashboard_OnSuccess() throws Exception {
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(user);
-        when(profileService.updateRecruiterProfile(any(ProfileUpdateRequest.class), anyInt())).thenReturn(profile);
+        when(recruiterProfilePageService.updateProfile(any(ProfileUpdateRequest.class))).thenReturn(
+                new RecruiterProfilePageService.PageResult("redirect:/dashboard?success=true", java.util.Map.of())
+        );
 
         mockMvc.perform(post("/recruiter/profile/update")
                 .param("firstName", "Jane")
@@ -80,16 +80,20 @@ class RecruiterProfileControllerTest {
     @Test
     @WithMockUser
     void updateProfile_ShouldReturnEditView_OnException() throws Exception {
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(user);
-        doThrow(new RuntimeException("Update failed")).when(profileService)
-                .updateRecruiterProfile(any(ProfileUpdateRequest.class), anyInt());
-        when(profileService.getRecruiterProfile(1)).thenReturn(profile);
+        when(recruiterProfilePageService.updateProfile(any(ProfileUpdateRequest.class))).thenReturn(
+                new RecruiterProfilePageService.PageResult("recruiter-profile-edit",
+                        java.util.Map.of("page", RecruiterProfileEditPageDTO.builder()
+                                .user(user)
+                                .profile(profile)
+                                .error("Update failed")
+                                .build()))
+        );
 
         mockMvc.perform(post("/recruiter/profile/update")
                 .param("firstName", "Jane")
                 .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recruiter-profile-edit"))
-                .andExpect(model().attributeExists("error"));
+                .andExpect(model().attributeExists("page"));
     }
 }

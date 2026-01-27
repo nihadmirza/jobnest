@@ -217,23 +217,23 @@
             <div class="col-lg-8">
                 <div class="job-info-card">
                     <h5><i class="fa fa-briefcase me-2"></i>Your Job Post</h5>
-                    <p><strong>Title:</strong> <span th:text="${job.title}">Job Title</span></p>
-                    <p><strong>Location:</strong> <span th:text="${job.location}">Location</span></p>
-                    <p><strong>Type:</strong> <span th:text="${job.employmentType}">Full-time</span></p>
+                    <p><strong>Title:</strong> <span th:text="${page.job.title}">Job Title</span></p>
+                    <p><strong>Location:</strong> <span th:text="${page.job.location}">Location</span></p>
+                    <p><strong>Type:</strong> <span th:text="${page.job.employmentType}">Full-time</span></p>
                 </div>
             </div>
         </div>
 
         <!-- Check if plans exist -->
-        <div th:if="${plans == null or plans.isEmpty()}" class="empty-state">
+        <div th:if="${page.plans == null or page.plans.isEmpty()}" class="empty-state">
             <h3>No Pricing Plans Available</h3>
             <p>Please contact support or check back later.</p>
         </div>
 
         <!-- Pricing Cards - Loop through plans dynamically -->
-        <div th:if="${plans != null and !plans.isEmpty()}" class="row g-4">
+        <div th:if="${page.plans != null and !page.plans.isEmpty()}" class="row g-4">
             <!-- Thymeleaf EACH loop to render each plan -->
-            <div th:each="plan : ${plans}" class="col-lg-4 col-md-6">
+            <div th:each="plan : ${page.plans}" class="col-lg-4 col-md-6">
                 <div class="pricing-card"
                     th:classappend="${plan.planName.equalsIgnoreCase('Featured') ? 'featured' : ''}">
 
@@ -325,7 +325,7 @@
                     <!-- FORM: Choose Plan Button with jobId and planId -->
                     <form th:action="@{/recruiter/checkout}" method="post">
                         <!-- Hidden input for jobId -->
-                        <input type="hidden" name="jobId" th:value="${job.jobId}" />
+                        <input type="hidden" name="jobId" th:value="${page.job.jobId}" />
 
                         <!-- Hidden input for planId -->
                         <input type="hidden" name="planId" th:value="${plan.planId}" />

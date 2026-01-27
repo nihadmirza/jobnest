@@ -3,10 +3,8 @@ package com.example.jobnest.controller;
 import com.example.jobnest.entity.Users;
 import com.example.jobnest.entity.UsersType;
 import com.example.jobnest.entity.JobSeekerProfile;
-import com.example.jobnest.entity.RecruiterProfile;
-import com.example.jobnest.services.AuthenticationService;
-import com.example.jobnest.services.ProfileService;
-import com.example.jobnest.services.UsersService;
+import com.example.jobnest.dto.response.ProfileEditPageDTO;
+import com.example.jobnest.services.ProfilePageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,9 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,13 +26,7 @@ class ProfileControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private UsersService usersService;
-
-    @MockBean
-    private ProfileService profileService;
-
-    @MockBean
-    private AuthenticationService authenticationService;
+    private ProfilePageService profilePageService;
 
     @Test
     @WithMockUser(username = "test@example.com")
@@ -47,24 +37,30 @@ class ProfileControllerTest {
         UsersType type = new UsersType();
         type.setUserTypeId(2);
         mockUser.setUserTypeId(type);
-
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(mockUser);
         JobSeekerProfile mockProfile = new JobSeekerProfile();
         mockProfile.setFirstName("John");
         mockProfile.setLastName("Doe");
-        when(profileService.getJobSeekerProfile(anyInt())).thenReturn(mockProfile);
+
+        when(profilePageService.editProfilePage()).thenReturn(
+                new ProfilePageService.PageResult("profile-edit", java.util.Map.of(
+                        "page", ProfileEditPageDTO.builder()
+                                .user(mockUser)
+                                .profile(mockProfile)
+                                .build()
+                ))
+        );
 
         mockMvc.perform(get("/profile/edit"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("profile-edit"))
-                .andExpect(model().attributeExists("user"));
+                .andExpect(model().attributeExists("page"));
     }
 
     @Test
     void testGetProfile_Unauthorized() throws Exception {
-        // No mock authenticaton - should redirect or fail depending on security config
-        // Actually the controller manually checks:
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(null);
+        when(profilePageService.editProfilePage()).thenReturn(
+                new ProfilePageService.PageResult("redirect:/login?error=true", java.util.Map.of())
+        );
 
         mockMvc.perform(get("/profile/edit"))
                 .andExpect(status().is3xxRedirection());
@@ -73,13 +69,9 @@ class ProfileControllerTest {
     @Test
     @WithMockUser
     void testGetProfile_RecruiterRedirectsDashboard() throws Exception {
-        Users mockUser = new Users();
-        mockUser.setUserId(2);
-        UsersType type = new UsersType();
-        type.setUserTypeId(1);
-        mockUser.setUserTypeId(type);
-
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(mockUser);
+        when(profilePageService.editProfilePage()).thenReturn(
+                new ProfilePageService.PageResult("redirect:/dashboard", java.util.Map.of())
+        );
 
         mockMvc.perform(get("/profile/edit"))
                 .andExpect(status().is3xxRedirection())
@@ -89,11 +81,9 @@ class ProfileControllerTest {
     @Test
     @WithMockUser
     void testGetProfile_UserTypeMissingRedirectsLogin() throws Exception {
-        Users mockUser = new Users();
-        mockUser.setUserId(3);
-        mockUser.setUserTypeId(null);
-
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(mockUser);
+        when(profilePageService.editProfilePage()).thenReturn(
+                new ProfilePageService.PageResult("redirect:/login?error=true", java.util.Map.of("error", "İstifadəçi tipi tapılmadı"))
+        );
 
         mockMvc.perform(get("/profile/edit"))
                 .andExpect(status().is3xxRedirection())
@@ -102,7 +92,9 @@ class ProfileControllerTest {
 
     @Test
     void testUpdateProfile_Unauthorized() throws Exception {
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(null);
+        when(profilePageService.updateProfile(any())).thenReturn(
+                new ProfilePageService.PageResult("redirect:/login?error=true", java.util.Map.of())
+        );
 
         mockMvc.perform(post("/profile/update")
                         .param("firstName", "Jane")
@@ -114,15 +106,9 @@ class ProfileControllerTest {
     @Test
     @WithMockUser
     void testUpdateProfile_JobSeekerSuccess() throws Exception {
-        Users mockUser = new Users();
-        mockUser.setUserId(4);
-        UsersType type = new UsersType();
-        type.setUserTypeId(2);
-        mockUser.setUserTypeId(type);
-
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(mockUser);
-        when(profileService.updateJobSeekerProfile(any(), anyInt()))
-                .thenReturn(new JobSeekerProfile());
+        when(profilePageService.updateProfile(any())).thenReturn(
+                new ProfilePageService.PageResult("redirect:/dashboard?success=true", java.util.Map.of())
+        );
 
         mockMvc.perform(post("/profile/update")
                         .param("firstName", "Jane")
@@ -140,36 +126,33 @@ class ProfileControllerTest {
         UsersType type = new UsersType();
         type.setUserTypeId(2);
         mockUser.setUserTypeId(type);
-
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(mockUser);
-        when(profileService.updateJobSeekerProfile(any(), anyInt()))
-                .thenThrow(new RuntimeException("Update failed"));
         JobSeekerProfile mockProfile = new JobSeekerProfile();
         mockProfile.setFirstName("John");
-        when(profileService.getJobSeekerProfile(5)).thenReturn(mockProfile);
+
+        when(profilePageService.updateProfile(any())).thenReturn(
+                new ProfilePageService.PageResult("profile-edit", java.util.Map.of(
+                        "page", ProfileEditPageDTO.builder()
+                                .user(mockUser)
+                                .profile(mockProfile)
+                                .error("Update failed")
+                                .build()
+                ))
+        );
 
         mockMvc.perform(post("/profile/update")
                         .param("firstName", "Jane")
                         .param("lastName", "Doe"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("profile-edit"))
-                .andExpect(model().attributeExists("error"))
-                .andExpect(model().attributeExists("profile"))
-                .andExpect(model().attributeExists("user"));
+                .andExpect(model().attributeExists("page"));
     }
 
     @Test
     @WithMockUser
     void testUpdateProfile_RecruiterSuccess() throws Exception {
-        Users mockUser = new Users();
-        mockUser.setUserId(6);
-        UsersType type = new UsersType();
-        type.setUserTypeId(1);
-        mockUser.setUserTypeId(type);
-
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(mockUser);
-        when(profileService.updateRecruiterProfile(any(), anyInt()))
-                .thenReturn(new RecruiterProfile());
+        when(profilePageService.updateProfile(any())).thenReturn(
+                new ProfilePageService.PageResult("redirect:/dashboard?success=true", java.util.Map.of())
+        );
 
         mockMvc.perform(post("/profile/update")
                         .param("company", "ACME"))

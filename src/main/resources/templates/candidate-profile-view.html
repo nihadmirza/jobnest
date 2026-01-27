@@ -5,11 +5,19 @@
     <meta charset="UTF-8" />
     <title>JobNest – Candidate Profile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Apply saved theme ASAP -->
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
     <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
 </head>
 
 <body class="bg-light-custom">
@@ -26,6 +34,11 @@
                 <ul class="navbar-nav ms-auto align-items-center gap-3">
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fa fa-moon" id="themeIcon"></i>
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -48,28 +61,29 @@
 
                     <div class="profile-info-container">
                         <div class="profile-avatar overflow-hidden p-0 border">
-                            <img th:if="${candidateProfile.base64Photo != null}"
-                                th:src="'data:image/jpeg;base64,' + ${candidateProfile.base64Photo}"
+                            <img th:if="${page.candidateProfile.base64Photo != null}"
+                                th:src="'data:image/jpeg;base64,' + ${page.candidateProfile.base64Photo}"
                                 class="w-100 h-100 object-fit-cover" alt="Profile Photo" />
-                            <img th:unless="${candidateProfile.base64Photo != null}"
+                            <img th:unless="${page.candidateProfile.base64Photo != null}"
                                 src="https://www.shutterstock.com/image-vector/vector-flat-illustration-gray-avatar-600nw-2264922221.jpg"
                                 class="w-100 h-100 object-fit-cover" alt="Profile Photo" />
                         </div>
 
                         <div class="profile-text pt-4 mt-2">
                             <h2 class="fw-bold text-dark"
-                                th:text="${(candidateProfile.firstName != null ? candidateProfile.firstName : '') + ' ' + (candidateProfile.lastName != null ? candidateProfile.lastName : '')}">
+                                th:text="${(page.candidateProfile.firstName != null ? page.candidateProfile.firstName : '') + ' ' + (page.candidateProfile.lastName != null ? page.candidateProfile.lastName : '')}">
                                 Candidate Name
                             </h2>
                             <p class="mb-0 text-muted">
                                 <i class="fa fa-map-marker me-1"></i>
-                                <span th:text="${candidateProfile.city}">City</span>,
-                                <span th:text="${candidateProfile.country}">Country</span>
+                                <span th:text="${page.candidateProfile.city}">City</span>,
+                                <span th:text="${page.candidateProfile.country}">Country</span>
                             </p>
                         </div>
 
                         <div class="ms-auto pt-4 mt-2">
-                            <a th:if="${candidateProfile.resume != null}" th:href="@{${candidateProfile.resume}}"
+                            <a th:if="${page.candidateProfile.resume != null}"
+                                th:href="@{${page.candidateProfile.resume}}"
                                 target="_blank" class="btn btn-primary btn-modern shadow-sm">
                                 <i class="fa fa-download me-2"></i> Resume
                             </a>
@@ -84,16 +98,17 @@
 
                                 <dl class="row mb-0">
                                     <dt class="col-sm-4 text-muted fw-normal">Email</dt>
-                                    <dd class="col-sm-8 fw-medium" th:text="${candidateUser.email}">email@example.com
+                                    <dd class="col-sm-8 fw-medium" th:text="${page.candidateUser.email}">
+                                        email@example.com
                                     </dd>
 
                                     <dt class="col-sm-4 text-muted fw-normal mt-3">Work Auth</dt>
                                     <dd class="col-sm-8 fw-medium mt-3"
-                                        th:text="${candidateProfile.workAuthorization ?: 'Not Specified'}">Auth</dd>
+                                        th:text="${page.candidateProfile.workAuthorization ?: 'Not Specified'}">Auth</dd>
 
                                     <dt class="col-sm-4 text-muted fw-normal mt-3">Employment</dt>
                                     <dd class="col-sm-8 fw-medium mt-3"
-                                        th:text="${candidateProfile.employmentType ?: 'Open to all'}">Type</dd>
+                                        th:text="${page.candidateProfile.employmentType ?: 'Open to all'}">Type</dd>
                                 </dl>
                             </div>
 
@@ -101,9 +116,9 @@
                             <div class="col-md-5">
                                 <h5 class="fw-bold text-dark mb-4 border-bottom pb-2">Skills & Expertise</h5>
 
-                                <div th:if="${candidateProfile.skills != null and !candidateProfile.skills.isEmpty()}"
+                                <div th:if="${page.candidateProfile.skills != null and !page.candidateProfile.skills.isEmpty()}"
                                     class="d-flex flex-wrap gap-2">
-                                    <span th:each="skill : ${candidateProfile.skills}"
+                                    <span th:each="skill : ${page.candidateProfile.skills}"
                                         class="badge bg-light text-dark border p-2">
                                         <span th:text="${skill.name}">Skill</span>
                                         <span th:if="${skill.experienceLevel}" class="text-muted fw-normal ms-1"
@@ -111,7 +126,7 @@
                                     </span>
                                 </div>
 
-                                <p th:if="${candidateProfile.skills == null or candidateProfile.skills.isEmpty()}"
+                                <p th:if="${page.candidateProfile.skills == null or page.candidateProfile.skills.isEmpty()}"
                                     class="text-muted fst-italic">
                                     No skills listed.
                                 </p>
@@ -131,6 +146,7 @@
 
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/theme-toggle.js}"></script>
 </body>
 
 </html>

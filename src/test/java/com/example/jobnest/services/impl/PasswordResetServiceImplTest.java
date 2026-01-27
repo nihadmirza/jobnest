@@ -2,6 +2,7 @@ package com.example.jobnest.services.impl;
 
 import com.example.jobnest.entity.PasswordResetToken;
 import com.example.jobnest.entity.Users;
+import com.example.jobnest.exception.InvalidTokenException;
 import com.example.jobnest.exception.ValidationException;
 import com.example.jobnest.repository.PasswordResetTokenRepository;
 import com.example.jobnest.repository.UsersRepository;
@@ -21,6 +22,8 @@ import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,6 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("null")
 class PasswordResetServiceImplTest {
 
     @Mock
@@ -126,6 +130,24 @@ class PasswordResetServiceImplTest {
 
         when(tokenRepository.findByToken("valid")).thenReturn(Optional.of(valid));
         assertTrue(passwordResetService.validateResetToken("valid"));
+    }
+
+    @Test
+    void getResetRequest_throwsWhenInvalid() {
+        when(tokenRepository.findByToken("missing")).thenReturn(Optional.empty());
+        assertThrows(InvalidTokenException.class, () -> passwordResetService.getResetRequest("missing"));
+    }
+
+    @Test
+    void getResetRequest_returnsRequestWhenValid() {
+        Users user = new Users();
+        PasswordResetToken valid = new PasswordResetToken(user);
+        valid.setExpiryDate(new Date(System.currentTimeMillis() + 100000));
+        when(tokenRepository.findByToken("valid")).thenReturn(Optional.of(valid));
+
+        var req = passwordResetService.getResetRequest("valid");
+        assertNotNull(req);
+        assertEquals("valid", req.getToken());
     }
 
     @Test

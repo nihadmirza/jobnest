@@ -26,7 +26,7 @@ class StaticResourceTest {
 
     @Test
     void fontAwesomeCssShouldBeAccessible() throws Exception {
-        mockMvc.perform(get("/webjars/font-awesome/css/all.min.css"))
+        mockMvc.perform(get("/css/font-awesome.min.css"))
                 .andExpect(status().isOk());
     }
 

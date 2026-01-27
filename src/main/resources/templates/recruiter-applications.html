@@ -5,12 +5,20 @@
     <meta charset="UTF-8" />
     <title>JobNest – Applications</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Apply saved theme ASAP -->
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
 </head>
 
 <body class="bg-light-custom">
@@ -27,6 +35,11 @@
                 <ul class="navbar-nav ms-auto align-items-center gap-3">
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fa fa-moon" id="themeIcon"></i>
+                        </button>
                     </li>
                     <li class="nav-item">
                         <form th:action="@{/logout}" method="post">
@@ -65,7 +78,8 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-3 text-center">
                         <h6 class="text-muted text-uppercase small fw-bold">Total</h6>
-                        <h2 class="fw-bold mb-0" style="color: var(--accent-teal);" th:text="${totalApplications}">0</h2>
+                        <h2 class="fw-bold mb-0" style="color: var(--accent-teal);"
+                            th:text="${page.stats.totalApplications}">0</h2>
                     </div>
                 </div>
             </div>
@@ -73,7 +87,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-3 text-center">
                         <h6 class="text-muted text-uppercase small fw-bold">Pending</h6>
-                        <h2 class="fw-bold mb-0 text-warning" th:text="${pendingCount}">0</h2>
+                        <h2 class="fw-bold mb-0 text-warning" th:text="${page.stats.pendingCount}">0</h2>
                     </div>
                 </div>
             </div>
@@ -81,7 +95,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-3 text-center">
                         <h6 class="text-muted text-uppercase small fw-bold">Reviewed</h6>
-                        <h2 class="fw-bold mb-0 text-info" th:text="${reviewedCount}">0</h2>
+                        <h2 class="fw-bold mb-0 text-info" th:text="${page.stats.reviewedCount}">0</h2>
                     </div>
                 </div>
             </div>
@@ -89,7 +103,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-3 text-center">
                         <h6 class="text-muted text-uppercase small fw-bold">Accepted</h6>
-                        <h2 class="fw-bold mb-0 text-success" th:text="${acceptedCount}">0</h2>
+                        <h2 class="fw-bold mb-0 text-success" th:text="${page.stats.acceptedCount}">0</h2>
                     </div>
                 </div>
             </div>
@@ -108,8 +122,9 @@
                                 <label class="form-label small fw-bold text-uppercase">Job Posting</label>
                                 <select class="form-select" name="jobId">
                                     <option value="">All Jobs</option>
-                                    <option th:each="job : ${allJobs}" th:value="${job.jobId}" th:text="${job.title}"
-                                        th:selected="${selectedJobId != null and selectedJobId == job.jobId}">
+                                    <option th:each="job : ${page.stats.allJobs}" th:value="${job.jobId}"
+                                        th:text="${job.title}"
+                                        th:selected="${page.selectedJobId != null and page.selectedJobId == job.jobId}">
                                         Job Title
                                     </option>
                                 </select>
@@ -117,14 +132,14 @@
                             <div class="mb-4">
                                 <label class="form-label small fw-bold text-uppercase">Status</label>
                                 <select class="form-select" name="status">
-                                    <option value="All" th:selected="${selectedStatus == 'All'}">All Statuses</option>
-                                    <option value="Pending" th:selected="${selectedStatus == 'Pending'}">Pending
+                                    <option value="All" th:selected="${page.selectedStatus == 'All'}">All Statuses</option>
+                                    <option value="Pending" th:selected="${page.selectedStatus == 'Pending'}">Pending
                                     </option>
-                                    <option value="Reviewed" th:selected="${selectedStatus == 'Reviewed'}">Reviewed
+                                    <option value="Reviewed" th:selected="${page.selectedStatus == 'Reviewed'}">Reviewed
                                     </option>
-                                    <option value="Accepted" th:selected="${selectedStatus == 'Accepted'}">Accepted
+                                    <option value="Accepted" th:selected="${page.selectedStatus == 'Accepted'}">Accepted
                                     </option>
-                                    <option value="Rejected" th:selected="${selectedStatus == 'Rejected'}">Rejected
+                                    <option value="Rejected" th:selected="${page.selectedStatus == 'Rejected'}">Rejected
                                     </option>
                                 </select>
                             </div>
@@ -141,14 +156,16 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-body p-0">
 
-                        <div th:if="${applications == null or applications.isEmpty()}" class="text-center py-5">
+                        <div th:if="${page.stats.applications == null or page.stats.applications.isEmpty()}"
+                            class="text-center py-5">
                             <div class="mb-3 opacity-25">
                                 <i class="fa-regular fa-folder-open fa-4x text-muted"></i>
                             </div>
                             <h5 class="text-muted">No applications found matching your criteria.</h5>
                         </div>
 
-                        <div class="table-responsive" th:if="${applications != null and !applications.isEmpty()}">
+                        <div class="table-responsive"
+                            th:if="${page.stats.applications != null and !page.stats.applications.isEmpty()}">
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="bg-light">
                                     <tr>
@@ -160,21 +177,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="app : ${applications}">
+                                    <tr th:each="app : ${page.stats.applications}">
                                         <td class="ps-4">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle overflow-hidden border me-3"
-                                                    style="width: 40px; height: 40px; flex-shrink: 0; background-color: #f8f9fa;">
-                                                    <img th:if="${candidateProfilesMap.get(app.user.userId).base64Photo != null}"
-                                                        th:src="'data:image/jpeg;base64,' + ${candidateProfilesMap.get(app.user.userId).base64Photo}"
+                                                <div class="rounded-circle overflow-hidden border me-3 bg-light"
+                                                    style="width: 40px; height: 40px; flex-shrink: 0;">
+                                                    <img th:if="${page.stats.candidateProfilesMap.get(app.user.userId).base64Photo != null}"
+                                                        th:src="'data:image/jpeg;base64,' + ${page.stats.candidateProfilesMap.get(app.user.userId).base64Photo}"
                                                         class="w-100 h-100 object-fit-cover" alt="Avatar" />
-                                                    <img th:unless="${candidateProfilesMap.get(app.user.userId).base64Photo != null}"
+                                                    <img th:unless="${page.stats.candidateProfilesMap.get(app.user.userId).base64Photo != null}"
                                                         src="https://www.shutterstock.com/image-vector/vector-flat-illustration-gray-avatar-600nw-2264922221.jpg"
                                                         class="w-100 h-100 object-fit-cover" alt="Avatar" />
                                                 </div>
                                                 <div>
                                                     <h6 class="mb-0 fw-bold"
-                                                        th:text="${candidateProfilesMap != null and candidateProfilesMap.containsKey(app.user.userId) ? (candidateProfilesMap[app.user.userId].firstName + ' ' + candidateProfilesMap[app.user.userId].lastName) : 'Unknown'}">
+                                                        th:text="${page.stats.candidateProfilesMap != null and page.stats.candidateProfilesMap.containsKey(app.user.userId) ? (page.stats.candidateProfilesMap[app.user.userId].firstName + ' ' + page.stats.candidateProfilesMap[app.user.userId].lastName) : 'Unknown'}">
                                                         Name
                                                     </h6>
                                                     <small class="text-muted" th:text="${app.user.email}">email</small>
@@ -267,6 +284,7 @@
 
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/theme-toggle.js}"></script>
 </body>
 
 </html>

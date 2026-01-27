@@ -141,7 +141,9 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-            <a th:href="@{/recruiter/pricing(jobId=${jobId})}" th:if="${jobId != null}" class="btn btn-primary-custom">
+            <a th:href="@{/recruiter/pricing(jobId=${page.jobId})}"
+                th:if="${page != null and page.jobId != null}"
+                class="btn btn-primary-custom">
                 <i class="fa fa-credit-card me-2"></i>Try Again
             </a>
             <a th:href="@{/recruiter/jobs}" class="btn btn-secondary-custom">

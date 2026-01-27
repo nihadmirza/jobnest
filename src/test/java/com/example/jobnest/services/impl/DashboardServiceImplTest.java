@@ -2,11 +2,16 @@ package com.example.jobnest.services.impl;
 
 import com.example.jobnest.dto.response.JobSeekerDashboardDTO;
 import com.example.jobnest.dto.response.RecruiterDashboardDTO;
+import com.example.jobnest.dto.response.UnifiedDashboardDTO;
 import com.example.jobnest.entity.JobSeekerProfile;
 import com.example.jobnest.entity.RecruiterProfile;
+import com.example.jobnest.entity.Users;
+import com.example.jobnest.entity.UsersType;
 import com.example.jobnest.exception.ResourceNotFoundException;
+import com.example.jobnest.exception.UnauthorizedException;
 import com.example.jobnest.repository.JobSeekerProfileRepository;
 import com.example.jobnest.repository.RecruiterProfileRepository;
+import com.example.jobnest.services.AuthenticationService;
 import com.example.jobnest.services.JobSeekerApplyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +37,9 @@ class DashboardServiceImplTest {
 
     @Mock
     private JobSeekerApplyService jobSeekerApplyService;
+
+    @Mock
+    private AuthenticationService authenticationService;
 
     @InjectMocks
     private DashboardServiceImpl dashboardService;
@@ -69,5 +77,34 @@ class DashboardServiceImplTest {
 
         assertEquals(profile, dto.getProfile());
         assertEquals(0, dto.getApplications().size());
+    }
+
+    @Test
+    void getDashboardData_throwsWhenUnauthenticated() {
+        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(null);
+        assertThrows(UnauthorizedException.class, () -> dashboardService.getDashboardData());
+    }
+
+    @Test
+    void getDashboardData_buildsRecruiterDashboard() {
+        UsersType type = new UsersType();
+        type.setUserTypeId(1);
+        Users user = new Users();
+        user.setUserId(1);
+        user.setUserTypeId(type);
+        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(user);
+
+        RecruiterProfile profile = new RecruiterProfile();
+        profile.setUserAccountId(42);
+        when(recruiterProfileRepository.findById(1)).thenReturn(Optional.of(profile));
+        when(jobSeekerApplyService.getApplicationCountByRecruiterId(42)).thenReturn(10L);
+        when(jobSeekerApplyService.getApplicationCountByRecruiterIdAndStatus(42, "Pending")).thenReturn(3L);
+
+        UnifiedDashboardDTO dto = dashboardService.getDashboardData();
+
+        assertEquals(com.example.jobnest.common.UserType.RECRUITER, dto.getUserType());
+        assertEquals(profile, dto.getRecruiterProfile());
+        assertEquals(10L, dto.getApplicationCount());
+        assertEquals(3L, dto.getPendingApplicationCount());
     }
 }

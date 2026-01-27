@@ -132,6 +132,115 @@ body {
 }
 
 /* =========================================
+   BOOTSTRAP UTILITY OVERRIDES (Dark mode)
+   Fix templates that use bg-white/bg-light/text-dark/etc.
+   ========================================= */
+[data-bs-theme="light"] .bg-light-custom {
+    background-color: var(--bg-secondary) !important;
+}
+
+[data-bs-theme="dark"] .bg-white {
+    background-color: var(--bg-secondary) !important;
+}
+
+[data-bs-theme="dark"] .bg-light,
+[data-bs-theme="dark"] .bg-light-custom {
+    background-color: var(--bg-primary) !important;
+}
+
+[data-bs-theme="dark"] .text-dark,
+[data-bs-theme="dark"] .text-black {
+    color: var(--text-primary) !important;
+}
+
+[data-bs-theme="dark"] .text-muted,
+[data-bs-theme="dark"] .text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+[data-bs-theme="dark"] .border,
+[data-bs-theme="dark"] .border-top,
+[data-bs-theme="dark"] .border-bottom,
+[data-bs-theme="dark"] .border-start,
+[data-bs-theme="dark"] .border-end {
+    border-color: var(--border-primary) !important;
+}
+
+/* Inputs that are forced to light backgrounds */
+[data-bs-theme="dark"] .form-control.bg-light,
+[data-bs-theme="dark"] .form-control.bg-white,
+[data-bs-theme="dark"] .input-group-text.bg-light,
+[data-bs-theme="dark"] .input-group-text.bg-white {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-primary) !important;
+}
+
+/* Table headers forced to bg-light */
+[data-bs-theme="dark"] thead.bg-light,
+[data-bs-theme="dark"] .table thead.bg-light {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Badges commonly used as bg-light text-dark */
+[data-bs-theme="dark"] .badge.bg-light {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-primary) !important;
+}
+
+/* Buttons that are forced to light look */
+[data-bs-theme="dark"] .btn-light {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-primary) !important;
+}
+
+[data-bs-theme="dark"] .btn-light:hover {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Dropdowns (used heavily in admin/recruiter pages) */
+[data-bs-theme="dark"] .dropdown-menu {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--border-primary) !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item {
+    color: var(--text-primary) !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover,
+[data-bs-theme="dark"] .dropdown-item:focus {
+    background-color: rgba(77, 137, 214, 0.12) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Alerts (forgot/reset password pages) */
+[data-bs-theme="dark"] .alert.alert-success {
+    background-color: rgba(46, 204, 113, 0.14) !important;
+    color: rgba(248, 250, 252, 0.92) !important;
+    border: 1px solid rgba(46, 204, 113, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .alert.alert-danger {
+    background-color: rgba(239, 68, 68, 0.14) !important;
+    color: rgba(248, 250, 252, 0.92) !important;
+    border: 1px solid rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Footer year text in layout templates uses inline rgba(255,255,255,0.5) */
+[data-bs-theme="dark"] footer .text-center[style*="rgba(255, 255, 255, 0.5)"] {
+    color: var(--text-secondary) !important;
+}
+
+[data-bs-theme="light"] footer .text-center[style*="rgba(255, 255, 255, 0.5)"] {
+    color: var(--text-secondary) !important;
+}
+
+/* =========================================
    TYPOGRAPHY
    ========================================= */
 h1,
@@ -751,6 +860,12 @@ footer {
     backdrop-filter: blur(10px);
 }
 
+[data-bs-theme="dark"] .trusted-section {
+    background: rgba(15, 23, 42, 0.6);
+    border-bottom: 1px solid var(--border-primary);
+    backdrop-filter: blur(10px);
+}
+
 .trusted-title {
     color: var(--text-secondary);
     text-align: center;
@@ -769,6 +884,10 @@ footer {
     opacity: 0.6;
 }
 
+[data-bs-theme="dark"] .company-logos {
+    opacity: 0.85;
+}
+
 .company-logo {
     font-size: 2rem;
     font-weight: 700;
@@ -776,9 +895,23 @@ footer {
     transition: var(--transition-base);
 }
 
+[data-bs-theme="dark"] .company-logo {
+    color: rgba(248, 250, 252, 0.75);
+}
+
 .company-logo:hover {
     color: var(--color-primary);
     transform: scale(1.1);
+}
+
+/* Hero email form readability in dark mode */
+[data-bs-theme="dark"] .hero-email-form {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-bs-theme="dark"] .hero-email-input::placeholder {
+    color: rgba(248, 250, 252, 0.55);
 }
 
 /* Reach Talent Section */
@@ -816,6 +949,10 @@ footer {
     justify-content: center;
 }
 
+[data-bs-theme="dark"] .feature-item i {
+    background: rgba(46, 204, 113, 0.12);
+}
+
 /* Job Cards (Extends standard card) */
 .job-card {
     background: #FFFFFF;
@@ -827,11 +964,22 @@ footer {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
 }
 
+[data-bs-theme="dark"] .job-card {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+
 .job-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
     /* Premium Shadow */
     border-color: rgba(0, 74, 173, 0.2);
+}
+
+[data-bs-theme="dark"] .job-card:hover {
+    box-shadow: 0 24px 30px rgba(0, 0, 0, 0.35);
+    border-color: rgba(77, 137, 214, 0.35);
 }
 
 .job-title {
@@ -860,6 +1008,11 @@ footer {
     margin-bottom: 1rem;
 }
 
+[data-bs-theme="dark"] .job-badge {
+    background: rgba(77, 137, 214, 0.18);
+    color: rgba(248, 250, 252, 0.9);
+}
+
 /* =========================================
    FEATURED JOBS (Enhanced Prominence)
    ========================================= */
@@ -869,6 +1022,10 @@ footer {
     padding: 140px 0;
     position: relative;
     overflow: hidden;
+}
+
+[data-bs-theme="dark"] .featured-jobs-section {
+    background: radial-gradient(circle at top, rgba(77, 137, 214, 0.14) 0%, rgba(15, 23, 42, 0.95) 55%, rgba(15, 23, 42, 1) 100%);
 }
 
 /* Add a subtle top border/separator effect */

@@ -5,11 +5,19 @@
     <meta charset="UTF-8" />
     <title>JobNest – All Users (Admin)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Apply saved theme ASAP -->
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
     <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
 </head>
 
 <body class="bg-light-custom">
@@ -23,6 +31,11 @@
                         <a class="nav-link" th:href="@{/admin/dashboard}">
                             <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
                         </a>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fa fa-moon" id="themeIcon"></i>
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -89,6 +102,7 @@
     </footer>
 
     <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/theme-toggle.js}"></script>
 </body>
 
 </html>

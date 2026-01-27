@@ -18,14 +18,16 @@
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h1 class="dashboard-title">
-                            Welcome back, <span th:text="${user?.firstName ?: 'User'}">User</span>!
+                            Welcome back,
+                            <span
+                                th:text="${dashboardData.userType.name() == 'RECRUITER' ? (dashboardData.recruiterProfile?.company ?: 'Recruiter') : (dashboardData.jobSeekerProfile?.firstName ?: 'User')}">User</span>!
                         </h1>
                         <p class="text-muted">Here's what's happening with your job activities today.</p>
                     </div>
                     <div class="col-md-4 text-md-end">
                         <span class="badge bg-light text-dark border px-3 py-2">
                             <i class="fa fa-user-circle me-1"></i>
-                            <span th:text="${userType ?: 'USER'}">ROLE</span>
+                            <span th:text="${dashboardData.userType.name()}">ROLE</span>
                         </span>
                     </div>
                 </div>
@@ -40,32 +42,34 @@
             </div>
 
             <!-- JOB SEEKER DASHBOARD -->
-            <div th:if="${userType == 'JOB_SEEKER'}">
+            <div th:if="${dashboardData.userType.name() == 'JOB_SEEKER'}">
                 <div class="row g-4">
                     <!-- Profile Card -->
                     <div class="col-lg-4">
                         <div class="card profile-card">
                             <div class="card-body p-4">
                                 <div class="mb-3">
-                                    <img th:if="${profile?.base64Photo != null}"
-                                        th:src="'data:image/jpeg;base64,' + ${profile.base64Photo}"
+                                    <img th:if="${dashboardData.jobSeekerProfile?.base64Photo != null}"
+                                        th:src="'data:image/jpeg;base64,' + ${dashboardData.jobSeekerProfile.base64Photo}"
                                         class="profile-avatar" alt="Profile" />
-                                    <img th:unless="${profile?.base64Photo != null}"
+                                    <img th:unless="${dashboardData.jobSeekerProfile?.base64Photo != null}"
                                         src="https://www.shutterstock.com/image-vector/vector-flat-illustration-gray-avatar-600nw-2264922221.jpg"
                                         class="profile-avatar" alt="Profile" />
                                 </div>
                                 <h4 class="fw-bold mb-1"
-                                    th:text="${(profile?.firstName ?: 'New') + ' ' + (profile?.lastName ?: 'User')}">
+                                    th:text="${(dashboardData.jobSeekerProfile?.firstName ?: 'New') + ' ' + (dashboardData.jobSeekerProfile?.lastName ?: 'User')}">
                                     Full Name
                                 </h4>
-                                <p class="text-muted mb-4" th:text="${profile?.employmentType ?: 'Ready to work'}">
+                                <p class="text-muted mb-4"
+                                    th:text="${dashboardData.jobSeekerProfile?.employmentType ?: 'Ready to work'}">
                                     Employment Type
                                 </p>
                                 <div class="d-grid gap-2">
                                     <a th:href="@{/profile/edit}" class="btn btn-outline-primary">
                                         <i class="fa fa-edit me-2"></i> Edit Profile
                                     </a>
-                                    <a th:if="${profile?.resume != null}" th:href="@{${profile.resume}}" target="_blank"
+                                    <a th:if="${dashboardData.jobSeekerProfile?.resume != null}"
+                                        th:href="@{${dashboardData.jobSeekerProfile.resume}}" target="_blank"
                                         class="btn btn-outline-secondary">
                                         <i class="fa fa-file-pdf-o me-2"></i> View Resume
                                     </a>
@@ -100,9 +104,9 @@
                                         <div>
                                             <h5 class="fw-bold mb-0">Profile Status</h5>
                                             <small class="text-success fw-bold"
-                                                th:if="${profile?.resume != null}">Complete</small>
+                                                th:if="${dashboardData.jobSeekerProfile?.resume != null}">Complete</small>
                                             <small class="text-danger fw-bold"
-                                                th:if="${profile?.resume == null}">Missing Resume</small>
+                                                th:if="${dashboardData.jobSeekerProfile?.resume == null}">Missing Resume</small>
                                         </div>
                                     </div>
                                 </div>
@@ -115,15 +119,16 @@
                                 <h5 class="fw-bold mb-0">Your Applications</h5>
                             </div>
                             <div class="card-body">
-                                <div th:if="${applications == null or applications.isEmpty()}"
+                                <div th:if="${dashboardData.applications == null or dashboardData.applications.isEmpty()}"
                                     class="text-center text-muted p-5">
                                     <i class="fa fa-folder-open fa-3x mb-3 opacity-25"></i>
                                     <p class="mb-3">You haven't applied to any jobs yet.</p>
                                     <a th:href="@{/jobs}" class="btn btn-primary">Explore Jobs</a>
                                 </div>
 
-                                <div th:if="${applications != null and !applications.isEmpty()}">
-                                    <a th:each="app : ${applications}" th:href="@{/jobs/{id}(id=${app.job.jobId})}"
+                                <div th:if="${dashboardData.applications != null and !dashboardData.applications.isEmpty()}">
+                                    <a th:each="app : ${dashboardData.applications}"
+                                        th:href="@{/jobs/{id}(id=${app.job.jobId})}"
                                         class="application-item">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div class="d-flex align-items-center">
@@ -156,25 +161,26 @@
             </div>
 
             <!-- RECRUITER DASHBOARD -->
-            <div th:if="${userType == 'RECRUITER'}">
+            <div th:if="${dashboardData.userType.name() == 'RECRUITER'}">
                 <div class="row g-4">
                     <!-- Recruiter Profile -->
                     <div class="col-lg-4">
                         <div class="card profile-card">
                             <div class="card-body p-4">
                                 <div class="mb-3">
-                                    <img th:if="${profile?.base64Photo != null}"
-                                        th:src="'data:image/jpeg;base64,' + ${profile.base64Photo}"
+                                    <img th:if="${dashboardData.recruiterProfile?.base64Photo != null}"
+                                        th:src="'data:image/jpeg;base64,' + ${dashboardData.recruiterProfile.base64Photo}"
                                         class="profile-avatar" alt="Profile" />
-                                    <div th:unless="${profile?.base64Photo != null}"
+                                    <div th:unless="${dashboardData.recruiterProfile?.base64Photo != null}"
                                         class="profile-avatar d-flex align-items-center justify-content-center bg-primary">
                                         <i class="fa fa-building fa-3x text-white"></i>
                                     </div>
                                 </div>
-                                <h4 class="fw-bold mb-1" th:text="${profile?.company ?: 'Company Name'}">Company</h4>
+                                <h4 class="fw-bold mb-1"
+                                    th:text="${dashboardData.recruiterProfile?.company ?: 'Company Name'}">Company</h4>
                                 <p class="text-muted small mb-4">
                                     <i class="fa fa-map-marker-alt me-1"></i>
-                                    <span th:text="${profile?.city ?: 'Location'}">Location</span>
+                                    <span th:text="${dashboardData.recruiterProfile?.city ?: 'Location'}">Location</span>
                                 </p>
                                 <div class="d-grid gap-2">
                                     <a th:href="@{/recruiter/jobs/new}" class="btn btn-primary">
@@ -196,7 +202,8 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div>
                                             <p class="stat-label mb-1">Total Applications</p>
-                                            <h2 class="stat-number mb-0" th:text="${applicationCount ?: 0}">0</h2>
+                                            <h2 class="stat-number mb-0"
+                                                th:text="${dashboardData.applicationCount ?: 0}">0</h2>
                                         </div>
                                         <div class="stat-icon">
                                             <i class="fa fa-users"></i>
@@ -216,7 +223,7 @@
                                         <div>
                                             <p class="stat-label mb-1">Pending Review</p>
                                             <h2 class="stat-number mb-0 text-warning"
-                                                th:text="${pendingApplicationCount ?: 0}">0</h2>
+                                                th:text="${dashboardData.pendingApplicationCount ?: 0}">0</h2>
                                         </div>
                                         <div class="stat-icon"
                                             style="background: linear-gradient(135deg, var(--color-warning) 0%, #d97706 100%);">

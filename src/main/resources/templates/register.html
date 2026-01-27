@@ -88,61 +88,61 @@
             <!-- Role Toggle -->
             <div class="d-flex bg-light p-1 rounded-3 mb-4 border">
                 <a th:href="@{/register(role='CANDIDATE')}" class="btn flex-fill"
-                    th:classappend="${role == 'CANDIDATE'} ? 'btn-white shadow-sm fw-bold' : 'text-muted'">
+                    th:classappend="${page.request.role == 'CANDIDATE'} ? 'btn-white shadow-sm fw-bold' : 'text-muted'">
                     Candidate
                 </a>
                 <a th:href="@{/register(role='RECRUITER')}" class="btn flex-fill"
-                    th:classappend="${role == 'RECRUITER'} ? 'btn-white shadow-sm fw-bold' : 'text-muted'">
+                    th:classappend="${page.request.role == 'RECRUITER'} ? 'btn-white shadow-sm fw-bold' : 'text-muted'">
                     Recruiter
                 </a>
             </div>
 
-            <form th:action="@{/register/new}" method="post" th:object="${userRegistrationRequest}">
+            <form th:action="@{/register/new}" method="post" th:object="${page}">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <input type="hidden" th:field="*{role}" />
+                <input type="hidden" th:field="*{request.role}" />
 
-                <div th:if="${successMessage}" class="alert alert-success d-flex align-items-center mb-4">
+                <div th:if="${page.successMessage}" class="alert alert-success d-flex align-items-center mb-4">
                     <i class="fa fa-check-circle me-2"></i>
-                    <small th:text="${successMessage}"></small>
+                    <small th:text="${page.successMessage}"></small>
                 </div>
 
-                <div th:if="${error}" class="alert alert-danger d-flex align-items-center mb-4">
+                <div th:if="${page.error}" class="alert alert-danger d-flex align-items-center mb-4">
                     <i class="fa fa-exclamation-circle me-2"></i>
-                    <small th:text="${error}"></small>
+                    <small th:text="${page.error}"></small>
                 </div>
 
                 <div class="row g-3 mb-3">
                     <div class="col-6">
                         <label class="form-label fw-bold small">First Name</label>
-                        <input type="text" th:field="*{firstName}" class="form-control" required
-                            th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid' : ''">
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}"
-                            th:errors="*{firstName}"></div>
+                        <input type="text" th:field="*{request.firstName}" class="form-control" required
+                            th:classappend="${#fields.hasErrors('request.firstName')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('request.firstName')}"
+                            th:errors="*{request.firstName}"></div>
                     </div>
                     <div class="col-6">
                         <label class="form-label fw-bold small">Last Name</label>
-                        <input type="text" th:field="*{lastName}" class="form-control" required
-                            th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid' : ''">
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">
+                        <input type="text" th:field="*{request.lastName}" class="form-control" required
+                            th:classappend="${#fields.hasErrors('request.lastName')} ? 'is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('request.lastName')}" th:errors="*{request.lastName}">
                         </div>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-bold small">Email Address</label>
-                    <input type="email" th:field="*{email}" class="form-control" required
-                        th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
-                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                    <input type="email" th:field="*{request.email}" class="form-control" required
+                        th:classappend="${#fields.hasErrors('request.email')} ? 'is-invalid' : ''">
+                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('request.email')}" th:errors="*{request.email}"
                         style="color: var(--status-rejected); font-weight: 500;">
                     </div>
                 </div>
 
-                <div class="mb-3" th:if="${role == 'RECRUITER'}">
+                <div class="mb-3" th:if="${page.request.role == 'RECRUITER'}">
                     <label class="form-label fw-bold small">Company Name</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fa fa-building text-muted"></i></span>
-                        <input type="text" th:field="*{company}" class="form-control border-start-0 ps-0"
+                        <input type="text" th:field="*{request.company}" class="form-control border-start-0 ps-0"
                             placeholder="Inc.">
                     </div>
                 </div>
@@ -152,23 +152,23 @@
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fa fa-lock text-muted"></i></span>
-                        <input type="password" th:field="*{password}" class="form-control border-start-0 ps-0"
+                        <input type="password" th:field="*{request.password}" class="form-control border-start-0 ps-0"
                             placeholder="••••••••" required
-                            th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''">
+                            th:classappend="${#fields.hasErrors('request.password')} ? 'is-invalid' : ''">
                     </div>
-                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('password')}"
-                        th:errors="*{password}" style="color: var(--status-rejected); font-weight: 500;">
+                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('request.password')}"
+                        th:errors="*{request.password}" style="color: var(--status-rejected); font-weight: 500;">
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
                     <span
-                        th:text="${role == 'RECRUITER' ? 'Create Recruit Profile' : 'Create Job Seeker Profile'}">Register</span>
+                        th:text="${page.request.role == 'RECRUITER' ? 'Create Recruit Profile' : 'Create Job Seeker Profile'}">Register</span>
                 </button>
 
                 <p class="text-center text-muted small">
                     Already have an account?
-                    <a th:href="@{/login(role=${role})}" class="text-accent fw-bold">Sign in</a>
+                    <a th:href="@{/login(role=${page.request.role})}" class="text-accent fw-bold">Sign in</a>
                 </p>
             </form>
         </div>

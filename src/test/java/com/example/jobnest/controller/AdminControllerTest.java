@@ -14,12 +14,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
+@SuppressWarnings("null")
 class AdminControllerTest {
 
     @Autowired
@@ -63,7 +67,7 @@ class AdminControllerTest {
         mockMvc.perform(get("/admin/login").param("error", "true"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin-login"))
-                .andExpect(model().attributeExists("error"));
+                .andExpect(content().string(containsString("Invalid credentials")));
     }
 
     @Test
@@ -71,7 +75,7 @@ class AdminControllerTest {
         mockMvc.perform(get("/admin/login").param("blocked", "true"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin-login"))
-                .andExpect(model().attributeExists("error"));
+                .andExpect(content().string(containsString("Account blocked for 15 minutes")));
     }
 
     @Test
@@ -82,8 +86,9 @@ class AdminControllerTest {
         mockMvc.perform(get("/admin/dashboard"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin-dashboard"))
-                .andExpect(model().attribute("totalUsers", 100L))
-                .andExpect(model().attribute("activeJobs", 50L));
+                .andExpect(model().attributeExists("dashboardData"))
+                .andExpect(model().attribute("dashboardData", hasProperty("totalUsers", is(100L))))
+                .andExpect(model().attribute("dashboardData", hasProperty("activeJobs", is(50L))));
     }
 
     @Test
@@ -105,7 +110,8 @@ class AdminControllerTest {
         mockMvc.perform(get("/admin/reports"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin-reports"))
-                .andExpect(model().attribute("totalUsers", 100L));
+                .andExpect(model().attributeExists("reportsData"))
+                .andExpect(model().attribute("reportsData", hasProperty("totalUsers", is(100L))));
     }
 
     @Test

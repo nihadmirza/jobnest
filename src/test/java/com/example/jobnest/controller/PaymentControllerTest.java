@@ -1,24 +1,24 @@
 package com.example.jobnest.controller;
 
-import com.example.jobnest.repository.PaymentTransactionRepository;
+import com.example.jobnest.dto.response.PaymentCancelPageDTO;
+import com.example.jobnest.dto.response.PaymentSuccessPageDTO;
+import com.example.jobnest.dto.response.PricingPlansPageDTO;
 import com.example.jobnest.entity.Job;
 import com.example.jobnest.entity.PaymentTransaction;
 import com.example.jobnest.entity.PricingPlan;
-import com.example.jobnest.services.PaymentService;
+import com.example.jobnest.services.PaymentPageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -26,22 +26,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(PaymentController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource(properties = "stripe.publishable.key=test")
 class PaymentControllerTest {
 
         @Autowired
         private MockMvc mockMvc;
 
         @MockBean
-        private PaymentService paymentService;
-
-        @MockBean
-        private PaymentTransactionRepository paymentTransactionRepository;
+        private PaymentPageService paymentPageService;
 
         @Test
         void testCreateCheckoutSession_Success() throws Exception {
-                when(paymentService.createCheckoutSession(anyInt(), anyInt(), anyInt()))
-                                .thenReturn("http://checkout-url");
+                when(paymentPageService.createCheckoutSession(anyInt(), anyInt()))
+                                .thenReturn(new PaymentPageService.RedirectResult("redirect:http://checkout-url"));
 
                 mockMvc.perform(post("/recruiter/checkout")
                                 .param("jobId", "1")
@@ -52,8 +48,8 @@ class PaymentControllerTest {
 
         @Test
         void testCreateCheckoutSession_Failure() throws Exception {
-                when(paymentService.createCheckoutSession(anyInt(), anyInt(), anyInt()))
-                                .thenThrow(new RuntimeException("Stripe error"));
+                when(paymentPageService.createCheckoutSession(anyInt(), anyInt()))
+                                .thenReturn(new PaymentPageService.RedirectResult("redirect:/recruiter/pricing?jobId=999"));
 
                 mockMvc.perform(post("/recruiter/checkout")
                                 .param("jobId", "999")
@@ -75,15 +71,18 @@ class PaymentControllerTest {
                 plan.setPrice(new BigDecimal("9.99"));
                 plan.setDurationDays(30);
 
-                when(paymentService.getJobForPayment(1)).thenReturn(job);
-                when(paymentService.getAllPricingPlans()).thenReturn(List.of(plan));
+                PricingPlansPageDTO page = PricingPlansPageDTO.builder()
+                        .job(job)
+                        .plans(List.of(plan))
+                        .publishableKey("test")
+                        .build();
+                when(paymentPageService.showPricingPlans(1))
+                        .thenReturn(new PaymentPageService.PageResult("pricing-plans", Map.of("page", page)));
 
                 mockMvc.perform(get("/recruiter/pricing").param("jobId", "1"))
                                 .andExpect(status().isOk())
                                 .andExpect(view().name("pricing-plans"))
-                                .andExpect(model().attribute("job", job))
-                                .andExpect(model().attribute("plans", List.of(plan)))
-                                .andExpect(model().attributeExists("publishableKey"));
+                                .andExpect(model().attributeExists("page"));
         }
 
         @Test
@@ -98,23 +97,24 @@ class PaymentControllerTest {
                 transaction.setPlan(plan);
                 transaction.setAmount(new BigDecimal("9.99"));
 
-                doNothing().when(paymentService).processSuccessfulPayment("sess_123");
-                when(paymentTransactionRepository.findByStripeSessionId("sess_123"))
-                                .thenReturn(Optional.of(transaction));
+                PaymentSuccessPageDTO page = PaymentSuccessPageDTO.builder()
+                        .transaction(transaction)
+                        .job(job)
+                        .plan(plan)
+                        .build();
+                when(paymentPageService.paymentSuccess("sess_123"))
+                        .thenReturn(new PaymentPageService.PageResult("payment-success", Map.of("page", page)));
 
                 mockMvc.perform(get("/payment/success").param("session_id", "sess_123"))
                                 .andExpect(status().isOk())
                                 .andExpect(view().name("payment-success"))
-                                .andExpect(model().attribute("transaction", transaction))
-                                .andExpect(model().attribute("job", job))
-                                .andExpect(model().attribute("plan", plan));
+                                .andExpect(model().attributeExists("page"));
         }
 
         @Test
         void testPaymentSuccess_ReturnsCancelOnError() throws Exception {
-                doNothing().when(paymentService).processSuccessfulPayment("missing");
-                when(paymentTransactionRepository.findByStripeSessionId("missing"))
-                                .thenReturn(Optional.empty());
+                when(paymentPageService.paymentSuccess("missing"))
+                        .thenReturn(new PaymentPageService.PageResult("payment-cancel", Map.of("error", "boom")));
 
                 mockMvc.perform(get("/payment/success").param("session_id", "missing"))
                                 .andExpect(status().isOk())
@@ -124,16 +124,24 @@ class PaymentControllerTest {
 
         @Test
         void testPaymentCancel_WithJobId() throws Exception {
+                PaymentCancelPageDTO page = PaymentCancelPageDTO.builder().jobId(22).build();
+                when(paymentPageService.paymentCancel(22))
+                        .thenReturn(new PaymentPageService.PageResult("payment-cancel", Map.of("page", page)));
+
                 mockMvc.perform(get("/payment/cancel").param("jobId", "22"))
                                 .andExpect(status().isOk())
                                 .andExpect(view().name("payment-cancel"))
-                                .andExpect(model().attribute("jobId", 22));
+                                .andExpect(model().attributeExists("page"));
 
-                verify(paymentService).handlePaymentCancellation(22);
+                verify(paymentPageService).paymentCancel(22);
         }
 
         @Test
         void testPaymentCancel_WithoutJobId() throws Exception {
+                when(paymentPageService.paymentCancel(null))
+                        .thenReturn(new PaymentPageService.PageResult("payment-cancel",
+                                Map.of("page", PaymentCancelPageDTO.builder().jobId(null).build())));
+
                 mockMvc.perform(get("/payment/cancel"))
                                 .andExpect(status().isOk())
                                 .andExpect(view().name("payment-cancel"));
@@ -141,6 +149,8 @@ class PaymentControllerTest {
 
         @Test
         void testStripeWebhook_ReturnsSuccess() throws Exception {
+                when(paymentPageService.handleStripeWebhook(anyString(), anyString())).thenReturn("success");
+
                 mockMvc.perform(post("/webhook/stripe")
                                 .contentType("application/json")
                                 .content("{}")

@@ -5,11 +5,19 @@
     <meta charset="UTF-8" />
     <title>JobNest – Edit Company Profile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Apply saved theme ASAP -->
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
     <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
 </head>
 
 <body class="bg-light-custom">
@@ -26,6 +34,11 @@
                 <ul class="navbar-nav ms-auto align-items-center gap-3">
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fa fa-moon" id="themeIcon"></i>
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -47,8 +60,8 @@
 
                     <div class="card-body p-4 p-md-5">
 
-                        <div th:if="${error}" class="alert alert-danger mb-4 shadow-sm border-0" role="alert">
-                            <i class="fa fa-exclamation-circle me-2"></i> <span th:text="${error}">Error</span>
+                        <div th:if="${page.error}" class="alert alert-danger mb-4 shadow-sm border-0" role="alert">
+                            <i class="fa fa-exclamation-circle me-2"></i> <span th:text="${page.error}">Error</span>
                         </div>
 
                         <form th:action="@{/recruiter/profile/update}" method="post" enctype="multipart/form-data"
@@ -58,10 +71,10 @@
                             <div class="mb-5 text-center">
                                 <div class="position-relative d-inline-block">
                                     <div class="rounded-circle overflow-hidden border shadow-sm avatar-xl bg-surface">
-                                        <img th:if="${profile.base64Photo != null}"
-                                            th:src="'data:image/jpeg;base64,' + ${profile.base64Photo}"
+                                        <img th:if="${page.profile.base64Photo != null}"
+                                            th:src="'data:image/jpeg;base64,' + ${page.profile.base64Photo}"
                                             class="w-100 h-100 object-fit-cover" alt="Profile Photo" />
-                                        <img th:unless="${profile.base64Photo != null}"
+                                        <img th:unless="${page.profile.base64Photo != null}"
                                             src="https://www.shutterstock.com/image-vector/vector-flat-illustration-gray-avatar-600nw-2264922221.jpg"
                                             class="w-100 h-100 object-fit-cover" alt="Profile Photo" />
                                     </div>
@@ -86,19 +99,19 @@
                                         <label class="form-label fw-bold small">Company Name <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="company"
-                                            th:value="${profile?.company}" required />
+                                            th:value="${page.profile?.company}" required />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small">First Name <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="firstName"
-                                            th:value="${profile?.firstName}" required />
+                                            th:value="${page.profile?.firstName}" required />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small">Last Name <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="lastName"
-                                            th:value="${profile?.lastName}" required />
+                                            th:value="${page.profile?.lastName}" required />
                                     </div>
                                 </div>
                             </div>
@@ -111,17 +124,17 @@
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold small">City</label>
                                         <input type="text" class="form-control" name="city"
-                                            th:value="${profile?.city}" />
+                                            th:value="${page.profile?.city}" />
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold small">State/Region</label>
                                         <input type="text" class="form-control" name="state"
-                                            th:value="${profile?.state}" />
+                                            th:value="${page.profile?.state}" />
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold small">Country</label>
                                         <input type="text" class="form-control" name="country"
-                                            th:value="${profile?.country}" />
+                                            th:value="${page.profile?.country}" />
                                     </div>
                                 </div>
                             </div>
@@ -149,6 +162,7 @@
 
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/theme-toggle.js}"></script>
 </body>
 
 </html>

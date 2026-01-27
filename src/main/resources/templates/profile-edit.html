@@ -5,11 +5,19 @@
     <meta charset="UTF-8" />
     <title>JobNest – Edit Profile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Apply saved theme ASAP -->
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}" />
     <link rel="stylesheet" href="/webjars/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
     <style>
         .file-upload-area {
             border: 2px dashed #cbd5e1;
@@ -59,6 +67,11 @@
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
                     </li>
+                    <li class="nav-item">
+                        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fa fa-moon" id="themeIcon"></i>
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -79,8 +92,8 @@
 
                     <div class="card-body p-4 p-md-5">
 
-                        <div th:if="${error}" class="alert alert-danger mb-4 shadow-sm border-0" role="alert">
-                            <i class="fa fa-exclamation-circle me-2"></i> <span th:text="${error}">Error</span>
+                        <div th:if="${page.error}" class="alert alert-danger mb-4 shadow-sm border-0" role="alert">
+                            <i class="fa fa-exclamation-circle me-2"></i> <span th:text="${page.error}">Error</span>
                         </div>
 
                         <form th:action="@{/profile/update}" method="post" enctype="multipart/form-data"
@@ -90,10 +103,10 @@
                             <div class="mb-5 text-center">
                                 <div class="position-relative d-inline-block">
                                     <div class="rounded-circle overflow-hidden border shadow-sm avatar-xl bg-surface">
-                                        <img th:if="${profile.base64Photo != null}"
-                                            th:src="'data:image/jpeg;base64,' + ${profile.base64Photo}"
+                                        <img th:if="${page.profile.base64Photo != null}"
+                                            th:src="'data:image/jpeg;base64,' + ${page.profile.base64Photo}"
                                             class="w-100 h-100 object-fit-cover" alt="Profile Photo" />
-                                        <img th:unless="${profile.base64Photo != null}"
+                                        <img th:unless="${page.profile.base64Photo != null}"
                                             src="https://www.shutterstock.com/image-vector/vector-flat-illustration-gray-avatar-600nw-2264922221.jpg"
                                             class="w-100 h-100 object-fit-cover" alt="Profile Photo" />
                                     </div>
@@ -118,26 +131,26 @@
                                         <label class="form-label fw-bold small">First Name <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="firstName"
-                                            th:value="${profile?.firstName}" required />
+                                            th:value="${page.profile?.firstName}" required />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small">Last Name <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="lastName"
-                                            th:value="${profile?.lastName}" required />
+                                            th:value="${page.profile?.lastName}" required />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small">Work Authorization</label>
                                         <select class="form-select" name="workAuthorization">
                                             <option value="">Select Status</option>
                                             <option th:value="'Citizen'"
-                                                th:selected="${profile?.workAuthorization == 'Citizen'}">Citizen
+                                                th:selected="${page.profile?.workAuthorization == 'Citizen'}">Citizen
                                             </option>
                                             <option th:value="'Work Permit'"
-                                                th:selected="${profile?.workAuthorization == 'Work Permit'}">Work Permit
+                                                th:selected="${page.profile?.workAuthorization == 'Work Permit'}">Work Permit
                                             </option>
                                             <option th:value="'No Work Permit'"
-                                                th:selected="${profile?.workAuthorization == 'No Work Permit'}">No Work
+                                                th:selected="${page.profile?.workAuthorization == 'No Work Permit'}">No Work
                                                 Permit</option>
                                         </select>
                                     </div>
@@ -146,15 +159,15 @@
                                         <select class="form-select" name="employmentType">
                                             <option value="">Select Preference</option>
                                             <option th:value="'Full-time'"
-                                                th:selected="${profile?.employmentType == 'Full-time'}">Full-time
+                                                th:selected="${page.profile?.employmentType == 'Full-time'}">Full-time
                                             </option>
                                             <option th:value="'Part-time'"
-                                                th:selected="${profile?.employmentType == 'Part-time'}">Part-time
+                                                th:selected="${page.profile?.employmentType == 'Part-time'}">Part-time
                                             </option>
                                             <option th:value="'Contract'"
-                                                th:selected="${profile?.employmentType == 'Contract'}">Contract</option>
+                                                th:selected="${page.profile?.employmentType == 'Contract'}">Contract</option>
                                             <option th:value="'Freelance'"
-                                                th:selected="${profile?.employmentType == 'Freelance'}">Freelance
+                                                th:selected="${page.profile?.employmentType == 'Freelance'}">Freelance
                                             </option>
                                         </select>
                                     </div>
@@ -169,17 +182,17 @@
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold small">City</label>
                                         <input type="text" class="form-control" name="city"
-                                            th:value="${profile?.city}" />
+                                            th:value="${page.profile?.city}" />
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold small">State/Region</label>
                                         <input type="text" class="form-control" name="state"
-                                            th:value="${profile?.state}" />
+                                            th:value="${page.profile?.state}" />
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold small">Country</label>
                                         <input type="text" class="form-control" name="country"
-                                            th:value="${profile?.country}" />
+                                            th:value="${page.profile?.country}" />
                                     </div>
                                 </div>
                             </div>
@@ -204,11 +217,11 @@
                                         class="fw-medium">filename.pdf</span>
                                 </div>
 
-                                <div th:if="${profile?.resume}"
+                                <div th:if="${page.profile?.resume}"
                                     class="mt-3 p-3 bg-light rounded border d-flex align-items-center justify-content-between">
                                     <div>
                                         <span class="badge bg-success me-2">Current</span>
-                                        <a th:href="@{${profile.resume}}" target="_blank"
+                                        <a th:href="@{${page.profile.resume}}" target="_blank"
                                             class="text-decoration-none fw-bold text-dark">
                                             <i class="fa fa-paperclip me-1"></i> View Existing Resume
                                         </a>
@@ -232,8 +245,8 @@
                                 </div>
 
                                 <div id="skillsContainer">
-                                    <div th:if="${profile?.skills != null}"
-                                        th:each="skill, iterStat : ${profile.skills}" class="skill-item"
+                                    <div th:if="${page.profile?.skills != null}"
+                                        th:each="skill, iterStat : ${page.profile.skills}" class="skill-item"
                                         th:id="'skill-' + ${iterStat.index + 1}">
                                         <div class="d-flex justify-content-between mb-3">
                                             <strong class="text-accent">Skill #<span
@@ -299,8 +312,9 @@
 
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/theme-toggle.js}"></script>
     <script th:inline="javascript">
-        let skillCount = /*[[${profile?.skills != null ? profile.skills.size() : 0}]]*/ 0;
+        let skillCount = /*[[${page.profile?.skills != null ? page.profile.skills.size() : 0}]]*/ 0;
 
         document.addEventListener('DOMContentLoaded', function () {
             if (skillCount === 0) addSkill();

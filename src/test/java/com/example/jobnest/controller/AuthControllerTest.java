@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -19,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@SuppressWarnings("null")
 public class AuthControllerTest {
 
     @Autowired
@@ -53,8 +55,7 @@ public class AuthControllerTest {
         mockMvc.perform(get("/login").param("error", "true").with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("login"))
-                .andExpect(model().attributeExists("error"))
-                .andExpect(model().attribute("error", "Invalid email or password."));
+                .andExpect(content().string(containsString("Invalid email or password.")));
     }
 
     @Test
@@ -62,7 +63,6 @@ public class AuthControllerTest {
         mockMvc.perform(get("/login").param("blocked", "true").with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("login"))
-                .andExpect(model().attributeExists("error"))
-                .andExpect(model().attribute("error", "Too many failed attempts. Account blocked for 15 minutes."));
+                .andExpect(content().string(containsString("Account blocked for 15 minutes")));
     }
 }

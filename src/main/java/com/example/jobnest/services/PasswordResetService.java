@@ -1,5 +1,7 @@
 package com.example.jobnest.services;
 
+import com.example.jobnest.dto.request.PasswordResetConfirmRequest;
+
 /**
  * Service for password reset operations.
  */
@@ -11,6 +13,14 @@ public interface PasswordResetService {
      * @param email User's email address
      */
     void initiatePasswordReset(String email);
+
+    /**
+     * Build a reset request for the given token (validates token).
+     *
+     * @param token Reset token
+     * @return PasswordResetConfirmRequest with token prefilled
+     */
+    PasswordResetConfirmRequest getResetRequest(String token);
 
     /**
      * Validate if reset token is valid and not expired.

@@ -1,7 +1,9 @@
 package com.example.jobnest.services.impl;
 
+import com.example.jobnest.dto.request.PasswordResetConfirmRequest;
 import com.example.jobnest.entity.PasswordResetToken;
 import com.example.jobnest.entity.Users;
+import com.example.jobnest.exception.InvalidTokenException;
 import com.example.jobnest.exception.ValidationException;
 import com.example.jobnest.repository.PasswordResetTokenRepository;
 import com.example.jobnest.repository.UsersRepository;
@@ -58,6 +60,16 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         } catch (Exception e) {
             throw new ValidationException("An error occurred while sending the email. Please try again.");
         }
+    }
+
+    @Override
+    public PasswordResetConfirmRequest getResetRequest(String token) {
+        if (!validateResetToken(token)) {
+            throw new InvalidTokenException("Invalid or expired password reset link. Please request a new one.");
+        }
+        PasswordResetConfirmRequest request = new PasswordResetConfirmRequest();
+        request.setToken(token);
+        return request;
     }
 
     @Override

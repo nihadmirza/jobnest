@@ -1,5 +1,6 @@
 package com.example.jobnest.services.impl;
 
+import com.example.jobnest.common.UserType;
 import com.example.jobnest.dto.request.UserRegistrationRequest;
 import com.example.jobnest.entity.JobSeekerProfile;
 import com.example.jobnest.entity.RecruiterProfile;
@@ -43,8 +44,8 @@ public class UsersServiceImpl implements UsersService {
         }
 
         // Find user type based on role
-        int userTypeId = request.getRole().equals("RECRUITER") ? 1 : 2;
-        UsersType userType = usersTypeRepository.findById(userTypeId)
+        UserType userType = "RECRUITER".equals(request.getRole()) ? UserType.RECRUITER : UserType.JOB_SEEKER;
+        UsersType dbUserType = usersTypeRepository.findById(userType.getId())
                 .orElseThrow(() -> new ValidationException("Yanlış istifadəçi tipi seçildi."));
 
         // Create new user
@@ -53,13 +54,13 @@ public class UsersServiceImpl implements UsersService {
         users.setPassword(passwordEncoder.encode(request.getPassword()));
         users.setActive(true);
         users.setRegistrationDate(new Date(System.currentTimeMillis()));
-        users.setUserTypeId(userType);
+        users.setUserTypeId(dbUserType);
 
         // Save user
         Users savedUser = usersRepository.save(users);
 
         // Create appropriate profile
-        if (userTypeId == 1) {
+        if (userType == UserType.RECRUITER) {
             // Recruiter profile
             RecruiterProfile recruiterProfile = new RecruiterProfile(savedUser);
             recruiterProfile.setFirstName(request.getFirstName());
@@ -112,8 +113,10 @@ public class UsersServiceImpl implements UsersService {
             throw new ValidationException("İstifadəçi tipi seçilməlidir.");
         }
 
-        int userTypeId = users.getUserTypeId().getUserTypeId();
-        if (userTypeId == 1) {
+        UserType userType = UserType.fromUsersType(users.getUserTypeId())
+                .orElseThrow(() -> new ValidationException("İstifadəçi tipi seçilməlidir."));
+
+        if (userType == UserType.RECRUITER) {
             // Recruiter profile yaradılması
             RecruiterProfile recruiterProfile = new RecruiterProfile(savedUser);
             recruiterProfile.setFirstName(firstName);

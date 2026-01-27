@@ -107,10 +107,16 @@
             </div>
 
             <form th:action="@{/admin/login}" method="post">
-                <div th:if="${error}"
+                <div th:if="${param.error}"
                     class="alert alert-danger d-flex align-items-center mb-4 small rounded-3 border-0 bg-danger text-white">
                     <i class="fa fa-exclamation-circle me-2"></i>
                     <span>Invalid credentials</span>
+                </div>
+
+                <div th:if="${param.blocked}"
+                    class="alert alert-danger d-flex align-items-center mb-4 small rounded-3 border-0 bg-danger text-white">
+                    <i class="fa fa-ban me-2"></i>
+                    <span>Too many failed attempts. Account blocked for 15 minutes.</span>
                 </div>
 
                 <div th:if="${param.logout}"

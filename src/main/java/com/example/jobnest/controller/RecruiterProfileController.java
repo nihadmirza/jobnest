@@ -1,10 +1,7 @@
 package com.example.jobnest.controller;
 
 import com.example.jobnest.dto.request.ProfileUpdateRequest;
-import com.example.jobnest.entity.RecruiterProfile;
-import com.example.jobnest.entity.Users;
-import com.example.jobnest.services.AuthenticationService;
-import com.example.jobnest.services.ProfileService;
+import com.example.jobnest.services.RecruiterProfilePageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,33 +17,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/recruiter/profile")
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class RecruiterProfileController {
 
-    private final ProfileService profileService;
-    private final AuthenticationService authenticationService;
+    private final RecruiterProfilePageService recruiterProfilePageService;
 
     @GetMapping("/edit")
     public String editProfile(Model model) {
-        Users user = authenticationService.getCurrentAuthenticatedUser();
-        RecruiterProfile profile = profileService.getRecruiterProfile(user.getUserId());
-
-        model.addAttribute("profile", profile);
-        model.addAttribute("user", user);
-        return "recruiter-profile-edit";
+        RecruiterProfilePageService.PageResult result = recruiterProfilePageService.editProfilePage();
+        model.addAllAttributes(result.model());
+        return result.viewName();
     }
 
     @PostMapping("/update")
     public String updateProfile(@ModelAttribute ProfileUpdateRequest request, Model model) {
-        Users user = authenticationService.getCurrentAuthenticatedUser();
-
-        try {
-            profileService.updateRecruiterProfile(request, user.getUserId());
-            return "redirect:/dashboard?success=true";
-        } catch (Exception e) {
-            RecruiterProfile profile = profileService.getRecruiterProfile(user.getUserId());
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("profile", profile);
-            return "recruiter-profile-edit";
-        }
+        RecruiterProfilePageService.PageResult result = recruiterProfilePageService.updateProfile(request);
+        model.addAllAttributes(result.model());
+        return result.viewName();
     }
 }

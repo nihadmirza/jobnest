@@ -1,14 +1,13 @@
 package com.example.jobnest.controller;
 
+import com.example.jobnest.dto.response.CandidateProfilePageDTO;
 import com.example.jobnest.dto.response.RecruiterApplicationStatsDTO;
+import com.example.jobnest.dto.response.RecruiterApplicationsPageDTO;
 import com.example.jobnest.entity.Job;
 import com.example.jobnest.entity.JobSeekerApply;
 import com.example.jobnest.entity.JobSeekerProfile;
-import com.example.jobnest.entity.RecruiterProfile;
 import com.example.jobnest.entity.Users;
-import com.example.jobnest.services.ApplicationManagementService;
-import com.example.jobnest.services.AuthenticationService;
-import com.example.jobnest.services.ProfileService;
+import com.example.jobnest.services.RecruiterApplicationsPageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +17,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,16 +35,9 @@ class JobSeekerApplyControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ApplicationManagementService applicationManagementService;
-
-    @MockBean
-    private AuthenticationService authenticationService;
-
-    @MockBean
-    private ProfileService profileService;
+    private RecruiterApplicationsPageService recruiterApplicationsPageService;
 
     private Users recruiterUser;
-    private RecruiterProfile recruiterProfile;
     private RecruiterApplicationStatsDTO statsDTO;
     private JobSeekerApply jobSeekerApply;
     private JobSeekerProfile jobSeekerProfile;
@@ -56,9 +47,6 @@ class JobSeekerApplyControllerTest {
         recruiterUser = new Users();
         recruiterUser.setUserId(1);
         recruiterUser.setEmail("recruiter@example.com");
-
-        recruiterProfile = new RecruiterProfile(recruiterUser);
-        recruiterProfile.setUserAccountId(100);
 
         statsDTO = new RecruiterApplicationStatsDTO();
         statsDTO.setApplications(Collections.emptyList());
@@ -91,42 +79,53 @@ class JobSeekerApplyControllerTest {
     @Test
     @WithMockUser
     void viewApplications_ShouldReturnViewWithData() throws Exception {
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(recruiterUser);
-        when(profileService.getRecruiterProfile(1)).thenReturn(recruiterProfile);
-        when(applicationManagementService.getApplicationsWithStats(anyInt(), any(), any())).thenReturn(statsDTO);
+        RecruiterApplicationsPageDTO page = RecruiterApplicationsPageDTO.builder()
+                .stats(statsDTO)
+                .selectedJobId(null)
+                .selectedStatus("All")
+                .build();
+        when(recruiterApplicationsPageService.viewApplications(any(), any()))
+                .thenReturn(new RecruiterApplicationsPageService.PageResult("recruiter-applications", Map.of("page", page)));
 
         mockMvc.perform(get("/recruiter/applications"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("recruiter-applications"))
-                .andExpect(model().attributeExists("applications"))
-                .andExpect(model().attributeExists("totalApplications"));
+                .andExpect(model().attributeExists("page"));
     }
 
     @Test
     @WithMockUser
     void updateApplicationStatus_ShouldRedirect() throws Exception {
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(recruiterUser);
-        when(profileService.getRecruiterProfile(1)).thenReturn(recruiterProfile);
-        doNothing().when(applicationManagementService).updateApplicationStatus(anyInt(), anyString(), anyInt());
+        when(recruiterApplicationsPageService.updateApplicationStatus(anyInt(), anyString(), any(), any()))
+                .thenReturn(new RecruiterApplicationsPageService.ActionResult(
+                        "redirect:/recruiter/applications",
+                        "success",
+                        "Application status updated successfully"
+                ));
 
         mockMvc.perform(post("/recruiter/applications/1/status")
                 .param("status", "Accepted")
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/recruiter/applications"));
+                .andExpect(redirectedUrl("/recruiter/applications"))
+                .andExpect(flash().attributeExists("success"));
     }
 
     @Test
     @WithMockUser
     void viewCandidateProfile_ShouldReturnView() throws Exception {
-        when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(recruiterUser);
-        when(profileService.getRecruiterProfile(1)).thenReturn(recruiterProfile);
-        when(applicationManagementService.getApplicationForRecruiter(anyInt(), anyInt())).thenReturn(jobSeekerApply);
-        when(profileService.getJobSeekerProfile(2)).thenReturn(jobSeekerProfile);
+        CandidateProfilePageDTO page = CandidateProfilePageDTO.builder()
+                .application(jobSeekerApply)
+                .candidateProfile(jobSeekerProfile)
+                .candidateUser(jobSeekerApply.getUser())
+                .job(jobSeekerApply.getJob())
+                .build();
+        when(recruiterApplicationsPageService.viewCandidateProfile(anyInt()))
+                .thenReturn(new RecruiterApplicationsPageService.PageResult("candidate-profile-view", Map.of("page", page)));
 
         mockMvc.perform(get("/recruiter/applications/1/candidate-profile"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("candidate-profile-view"))
-                .andExpect(model().attributeExists("candidateProfile"));
+                .andExpect(model().attributeExists("page"));
     }
 }

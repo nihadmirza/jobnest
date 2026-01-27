@@ -25,7 +25,6 @@ public class ForgotPasswordController {
 
     private static final String FORGOT_PASSWORD_VIEW = "forgot-password";
     private static final String RESET_PASSWORD_VIEW = "reset-password";
-    private static final String ERROR_ATTR = "error";
     private static final String TOKEN_PARAM = "token";
 
     private final PasswordResetService passwordResetService;
@@ -40,39 +39,18 @@ public class ForgotPasswordController {
     public String processForgotPassword(
             @Valid @ModelAttribute("request") PasswordResetRequest request,
             BindingResult bindingResult,
-            Model model,
             RedirectAttributes redirectAttributes) {
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute(ERROR_ATTR, bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return FORGOT_PASSWORD_VIEW;
-        }
-
-        try {
-            passwordResetService.initiatePasswordReset(request.getEmail());
-            redirectAttributes.addFlashAttribute("success",
-                    "If this email address is registered, a password reset link will be sent.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(ERROR_ATTR, e.getMessage());
-        }
-
+        if (bindingResult.hasErrors()) return FORGOT_PASSWORD_VIEW;
+        passwordResetService.initiatePasswordReset(request.getEmail());
+        redirectAttributes.addFlashAttribute("success",
+                "If this email address is registered, a password reset link will be sent.");
         return "redirect:/forgot-password";
     }
 
     @GetMapping("/reset-password")
-    public String showResetPasswordForm(
-            @RequestParam(required = false) String token,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-
-        if (!passwordResetService.validateResetToken(token)) {
-            redirectAttributes.addFlashAttribute(ERROR_ATTR,
-                    "Invalid or expired password reset link. Please request a new one.");
-            return "redirect:/forgot-password";
-        }
-
-        PasswordResetConfirmRequest request = new PasswordResetConfirmRequest();
-        request.setToken(token);
+    public String showResetPasswordForm(@RequestParam String token, Model model) {
+        PasswordResetConfirmRequest request = passwordResetService.getResetRequest(token);
         model.addAttribute("request", request);
         model.addAttribute(TOKEN_PARAM, token);
         return RESET_PASSWORD_VIEW;
@@ -86,20 +64,12 @@ public class ForgotPasswordController {
             RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute(ERROR_ATTR, bindingResult.getAllErrors().get(0).getDefaultMessage());
             model.addAttribute(TOKEN_PARAM, request.getToken());
             return RESET_PASSWORD_VIEW;
         }
-
-        try {
-            passwordResetService.resetPassword(request.getToken(), request.getPassword());
-            redirectAttributes.addFlashAttribute("success",
-                    "Your password has been successfully updated. You can now login with your new password.");
-            return "redirect:/login";
-        } catch (Exception e) {
-            model.addAttribute(ERROR_ATTR, e.getMessage());
-            model.addAttribute(TOKEN_PARAM, request.getToken());
-            return RESET_PASSWORD_VIEW;
-        }
+        passwordResetService.resetPassword(request.getToken(), request.getPassword());
+        redirectAttributes.addFlashAttribute("success",
+                "Your password has been successfully updated. You can now login with your new password.");
+        return "redirect:/login";
     }
 }

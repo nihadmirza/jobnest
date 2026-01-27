@@ -6,14 +6,18 @@
 
 /* Legacy variables for backward compatibility */
 :root {
-    --primary-color: #0f172a;
-    --secondary-color: #10b981;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
-    --status-rejected: #ef4444;
-    --status-approved: #10b981;
-    --status-pending: #f59e0b;
+    /*
+     * Map legacy variables to the unified theme system (theme.css).
+     * This keeps old templates/styles consistent across light/dark mode.
+     */
+    --primary-color: var(--color-primary);
+    --secondary-color: var(--color-accent);
+    --text-main: var(--text-primary);
+    --text-muted: var(--text-secondary);
+    --border-color: var(--border-primary);
+    --status-rejected: var(--color-error);
+    --status-approved: var(--color-success);
+    --status-pending: var(--color-warning);
 }
 
 /* Legacy utility classes - will be removed after migration */
@@ -26,7 +30,7 @@
 }
 
 .bg-light-custom {
-    background-color: var(--bg-body) !important;
+    background-color: var(--bg-secondary) !important;
 }
 
 /* Legacy hover utilities */

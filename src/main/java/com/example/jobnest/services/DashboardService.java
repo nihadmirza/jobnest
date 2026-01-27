@@ -2,11 +2,19 @@ package com.example.jobnest.services;
 
 import com.example.jobnest.dto.response.JobSeekerDashboardDTO;
 import com.example.jobnest.dto.response.RecruiterDashboardDTO;
+import com.example.jobnest.dto.response.UnifiedDashboardDTO;
 
 /**
  * Service for dashboard data aggregation.
  */
 public interface DashboardService {
+
+    /**
+     * Get unified dashboard data for the current authenticated user.
+     *
+     * @return Unified dashboard view-model
+     */
+    UnifiedDashboardDTO getDashboardData();
 
     /**
      * Get dashboard data for recruiter.

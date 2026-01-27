@@ -1,12 +1,18 @@
 package com.example.jobnest.services.impl;
 
+import com.example.jobnest.common.UserType;
 import com.example.jobnest.dto.response.JobSeekerDashboardDTO;
 import com.example.jobnest.dto.response.RecruiterDashboardDTO;
+import com.example.jobnest.dto.response.UnifiedDashboardDTO;
 import com.example.jobnest.entity.JobSeekerProfile;
 import com.example.jobnest.entity.RecruiterProfile;
+import com.example.jobnest.entity.Users;
 import com.example.jobnest.exception.ResourceNotFoundException;
+import com.example.jobnest.exception.UnauthorizedException;
+import com.example.jobnest.exception.ValidationException;
 import com.example.jobnest.repository.JobSeekerProfileRepository;
 import com.example.jobnest.repository.RecruiterProfileRepository;
+import com.example.jobnest.services.AuthenticationService;
 import com.example.jobnest.services.DashboardService;
 import com.example.jobnest.services.JobSeekerApplyService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +31,35 @@ public class DashboardServiceImpl implements DashboardService {
     private final RecruiterProfileRepository recruiterProfileRepository;
     private final JobSeekerProfileRepository jobSeekerProfileRepository;
     private final JobSeekerApplyService jobSeekerApplyService;
+    private final AuthenticationService authenticationService;
+
+    @Override
+    @Transactional(readOnly = true)
+    public UnifiedDashboardDTO getDashboardData() {
+        Users user = authenticationService.getCurrentAuthenticatedUser();
+        if (user == null) {
+            throw new UnauthorizedException("Authentication required to view dashboard.");
+        }
+        UserType userType = UserType.fromUsersType(user.getUserTypeId())
+                .orElseThrow(() -> new ValidationException("User type not found for current user."));
+
+        if (userType == UserType.RECRUITER) {
+            RecruiterDashboardDTO recruiter = getRecruiterDashboardData(user.getUserId());
+            return UnifiedDashboardDTO.builder()
+                    .userType(UserType.RECRUITER)
+                    .recruiterProfile(recruiter.getProfile())
+                    .applicationCount(recruiter.getApplicationCount())
+                    .pendingApplicationCount(recruiter.getPendingApplicationCount())
+                    .build();
+        }
+
+        JobSeekerDashboardDTO seeker = getJobSeekerDashboardData(user.getUserId());
+        return UnifiedDashboardDTO.builder()
+                .userType(UserType.JOB_SEEKER)
+                .jobSeekerProfile(seeker.getProfile())
+                .applications(seeker.getApplications())
+                .build();
+    }
 
     @Override
     @Transactional(readOnly = true)

@@ -1,7 +1,8 @@
 package com.example.jobnest.config;
 
 import com.example.jobnest.dto.response.AdminDashboardDTO;
-import com.example.jobnest.dto.response.JobSeekerDashboardDTO;
+import com.example.jobnest.common.UserType;
+import com.example.jobnest.dto.response.UnifiedDashboardDTO;
 import com.example.jobnest.entity.JobSeekerProfile;
 import com.example.jobnest.entity.Users;
 import com.example.jobnest.entity.UsersType;
@@ -57,9 +58,12 @@ class SecurityConfigTest {
                 when(authenticationService.getCurrentAuthenticatedUser()).thenReturn(mockUser);
 
                 // Mock dashboard data
-                JobSeekerDashboardDTO mockData = new JobSeekerDashboardDTO();
-                mockData.setProfile(new JobSeekerProfile());
-                when(dashboardService.getJobSeekerDashboardData(1)).thenReturn(mockData);
+                UnifiedDashboardDTO mockData = UnifiedDashboardDTO.builder()
+                                .userType(UserType.JOB_SEEKER)
+                                .jobSeekerProfile(new JobSeekerProfile())
+                                .applications(java.util.List.of())
+                                .build();
+                when(dashboardService.getDashboardData()).thenReturn(mockData);
 
                 // Mock admin data
                 when(adminReportService.getDashboardStats())
